@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Utsav - Plan a wedding, birthday or community event in one place{% endblock %}
+
+{% block content %}
+<!-- Section 1: Hero -->
+<section class="section-rhythm-white bg-white py-10 md:py-16 border-b border-[#E4DDE0]">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      <!-- Left Column -->
+      <div class="lg:col-span-7 space-y-6">
+        <h1 class="h1-hero text-ink tracking-tight font-serif font-bold text-3xl sm:text-4xl md:text-5xl">Plan a wedding, birthday or community event in one place.</h1>
+        <p class="body-lead text-base md:text-lg text-muted max-w-[65ch] leading-relaxed">Enter your budget, guest count and date. Utsav splits the budget, builds a countdown timeline and a vendor checklist, and suggests ideas for your event.</p>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
+          <a href="/create" class="btn-primary inline-flex items-center justify-center h-12 px-6 rounded-lg bg-[#8B1E3F] text-white font-semibold hover:bg-[#6B1530] transition-colors w-full sm:w-auto text-center">Start planning</a>
+          <a href="#how-it-works" class="btn-secondary inline-flex items-center justify-center h-12 px-6 rounded-lg bg-white text-[#8B1E3F] border-2 border-[#8B1E3F] font-semibold hover:bg-[#F7F4F5] transition-colors w-full sm:w-auto text-center">How it works</a>
+        </div>
+        <p class="text-xs text-muted font-medium">No sign-up needed.</p>
+      </div>
+
+      <!-- Right Column: Live Sample Plan Card -->
+      <div class="lg:col-span-5">
+        <div id="sample-plan-card" class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-4 shadow-sm">
+          <div class="border-b border-[#E4DDE0] pb-3">
+            <h2 class="text-sm font-semibold text-ink leading-snug">Example: a wedding for 200 guests, ₹15,00,000, 120 days away</h2>
+            <p class="text-xs text-muted mt-1">Calculated live by the same engine your plan uses.</p>
+          </div>
+
+          <!-- Per-Guest Metric -->
+          <div class="p-3.5 bg-[#F7F4F5] border border-[#E4DDE0] rounded-lg flex items-center justify-between text-xs">
+            <span class="text-muted font-medium">Per-guest allocation:</span>
+            <span id="sample-per-guest" class="font-semibold text-primary">₹7,500 (Generous)</span>
+          </div>
+
+          <!-- First 4 Budget Rows -->
+          <div class="space-y-1.5">
+            <span class="text-xs font-semibold text-muted uppercase tracking-wider block">Top Budget Allocations</span>
+            <div id="sample-budget-rows" class="space-y-1.5 text-xs"></div>
+          </div>
+
+          <!-- Next 2 Timeline Tasks -->
+          <div class="space-y-1.5 pt-2 border-t border-[#E4DDE0]">
+            <span class="text-xs font-semibold text-muted uppercase tracking-wider block">Upcoming Milestones</span>
+            <ul id="sample-timeline-tasks" class="space-y-1 text-xs"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: What you get -->
+<section class="section-rhythm-panel bg-[#F7F4F5] py-10 md:py-16 border-b border-[#E4DDE0]">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-8">
+    <div class="max-w-2xl">
+      <h2 class="h2-title text-ink font-serif font-bold text-2xl sm:text-3xl">What you get</h2>
+      <p class="body-lead mt-2 text-muted">Every plan is computed deterministically for your specific numbers and dates.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Card 1: Budget split -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-lg bg-[#F7F4F5] flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <h3 class="text-base font-semibold text-ink">Budget split</h3>
+        <p class="text-sm text-muted leading-relaxed">Splits your budget across venue, catering, decor and more, adjusted for the two areas you care about most.</p>
+      </div>
+
+      <!-- Card 2: Countdown timeline -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-lg bg-[#F7F4F5] flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <h3 class="text-base font-semibold text-ink">Countdown timeline</h3>
+        <p class="text-sm text-muted leading-relaxed">Schedules preparation milestones backwards from your date so you always know what to book and decide next.</p>
+      </div>
+
+      <!-- Card 3: Vendor checklist -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-lg bg-[#F7F4F5] flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+        </div>
+        <h3 class="text-base font-semibold text-ink">Vendor checklist</h3>
+        <p class="text-sm text-muted leading-relaxed">Provides actionable tasks and practical questions for every category, ordered by where your money goes.</p>
+      </div>
+
+      <!-- Card 4: Ideas and questions -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-lg bg-[#F7F4F5] flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <h3 class="text-base font-semibold text-ink">Ideas and questions</h3>
+        <p class="text-sm text-muted leading-relaxed">Generates bespoke themes, menus and decor concepts, plus an AI assistant to answer questions using your plan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: How it works -->
+<section class="section-rhythm-white bg-white py-10 md:py-16 border-b border-[#E4DDE0]" id="how-it-works">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-8">
+    <div class="max-w-2xl">
+      <h2 class="h2-title text-ink font-serif font-bold text-2xl sm:text-3xl">How it works</h2>
+      <p class="body-lead mt-2 text-muted">Three simple steps to a complete, realistic event plan.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">1</div>
+        <h3 class="text-base font-semibold text-ink">Tell us the basics</h3>
+        <p class="text-sm text-muted leading-relaxed">Enter your event type, total budget, guest count, event date, and optional city and preferences.</p>
+      </div>
+
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">2</div>
+        <h3 class="text-base font-semibold text-ink">Get your plan</h3>
+        <p class="text-sm text-muted leading-relaxed">Instantly receive a computed budget breakdown, countdown timeline milestones, and vendor tasks.</p>
+      </div>
+
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">3</div>
+        <h3 class="text-base font-semibold text-ink">Ask and adjust</h3>
+        <p class="text-sm text-muted leading-relaxed">Request creative AI ideas, ask questions grounded strictly in your own plan, or print and save as PDF.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Three kinds of events -->
+<section class="section-rhythm-panel bg-[#F7F4F5] py-10 md:py-16 border-b border-[#E4DDE0]">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-8">
+    <div class="max-w-2xl">
+      <h2 class="h2-title text-ink font-serif font-bold text-2xl sm:text-3xl">Three kinds of events</h2>
+      <p class="body-lead mt-2 text-muted">Each celebration type uses distinct planning assumptions and timeline schedules.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Wedding -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <h3 class="text-lg font-serif font-bold text-ink">Wedding</h3>
+        <p class="text-sm text-muted leading-relaxed">Includes dedicated budget splits for venue, catering, decor, photography, attire & beauty, and entertainment. The timeline begins about {{ lead_times['wedding'] }} days out.</p>
+      </div>
+
+      <!-- Birthday -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <h3 class="text-lg font-serif font-bold text-ink">Birthday</h3>
+        <p class="text-sm text-muted leading-relaxed">Focuses spending on venue, catering, cake, entertainment, decor, and favors. The timeline begins about {{ lead_times['birthday'] }} days out.</p>
+      </div>
+
+      <!-- Community event -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 space-y-3">
+        <h3 class="text-lg font-serif font-bold text-ink">Community event</h3>
+        <p class="text-sm text-muted leading-relaxed">Prioritises sound & AV, venue, staging, permits & insurance, volunteer logistics, and publicity. The timeline begins about {{ lead_times['community'] }} days out.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: What the AI does, and what it doesn't -->
+<section class="section-rhythm-white bg-white py-10 md:py-16 border-b border-[#E4DDE0]">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-8">
+    <div class="max-w-2xl">
+      <h2 class="h2-title text-ink font-serif font-bold text-2xl sm:text-3xl">What the AI does, and what it doesn't</h2>
+      <p class="body-lead mt-2 text-muted">Utsav separates deterministic mathematics from creative generative suggestions.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Does -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 sm:p-8 space-y-4">
+        <h3 class="text-base font-semibold text-ink flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <span>What the AI does</span>
+        </h3>
+        <ul class="space-y-2.5 text-sm text-muted">
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold">✓</span>
+            <span>Suggests themes, menus, activities and decor tailored to your guest count and notes.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold">✓</span>
+            <span>Answers specific questions grounded strictly in your calculated budget and dates.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold">✓</span>
+            <span>Provides sensible discussion points for family or organizing committees.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Doesn't -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-6 sm:p-8 space-y-4">
+        <h3 class="text-base font-semibold text-ink flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-primary"></span>
+          <span>What the AI does not do</span>
+        </h3>
+        <ul class="space-y-2.5 text-sm text-muted">
+          <li class="flex items-start gap-2">
+            <span class="text-primary font-bold">✕</span>
+            <span>Never changes your budget allocations, guest counts, or scheduled dates.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary font-bold">✕</span>
+            <span>Never names vendors, invents contact information, or quotes market rates.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary font-bold">✕</span>
+            <span>Never books services or handles financial transactions.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="p-4 bg-[#F7F4F5] border border-[#E4DDE0] rounded-lg text-sm text-muted">
+      <p>If the AI is unavailable, you still get the full plan and general ideas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Section 6: FAQ -->
+<section class="section-rhythm-panel bg-[#F7F4F5] py-10 md:py-16 border-b border-[#E4DDE0]">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-8">
+    <div class="max-w-2xl">
+      <h2 class="h2-title text-ink font-serif font-bold text-2xl sm:text-3xl">Frequently asked questions</h2>
+      <p class="body-lead mt-2 text-muted">Common questions about privacy, accuracy, and event planning with Utsav.</p>
+    </div>
+
+    <div class="space-y-3 max-w-3xl">
+      <details class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 group">
+        <summary class="font-semibold text-ink cursor-pointer list-none flex items-center justify-between text-base">
+          <span>Do I need an account?</span>
+          <span class="text-muted transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <p class="mt-3 text-sm text-muted leading-relaxed">No. Plan details stay in your browser.</p>
+      </details>
+
+      <details class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 group">
+        <summary class="font-semibold text-ink cursor-pointer list-none flex items-center justify-between text-base">
+          <span>What is sent to the AI?</span>
+          <span class="text-muted transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <p class="mt-3 text-sm text-muted leading-relaxed">A summary of your plan plus your preferences or question, only when you click "Get ideas" or "Ask".</p>
+      </details>
+
+      <details class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 group">
+        <summary class="font-semibold text-ink cursor-pointer list-none flex items-center justify-between text-base">
+          <span>How accurate are the amounts?</span>
+          <span class="text-muted transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <p class="mt-3 text-sm text-muted leading-relaxed">Splits are planning assumptions for each event type; prices vary by city and season, so confirm quotes with vendors.</p>
+      </details>
+
+      <details class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 group">
+        <summary class="font-semibold text-ink cursor-pointer list-none flex items-center justify-between text-base">
+          <span>What if my event is soon?</span>
+          <span class="text-muted transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <p class="mt-3 text-sm text-muted leading-relaxed">Overdue tasks are rescheduled into the days you have left and labelled "Rescheduled".</p>
+      </details>
+
+      <details class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 group">
+        <summary class="font-semibold text-ink cursor-pointer list-none flex items-center justify-between text-base">
+          <span>Can I use it outside India?</span>
+          <span class="text-muted transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <p class="mt-3 text-sm text-muted leading-relaxed">Amounts are in rupees; other currencies are not supported yet.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- Section 7: Closing band -->
+<section class="section-rhythm-white bg-white py-12 md:py-20">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 text-center max-w-2xl space-y-6">
+    <p class="text-lg text-ink font-medium">Ready to start planning your celebration with a clear budget, countdown timeline, and vendor checklist?</p>
+    <div>
+      <a href="/create" class="btn-primary inline-flex items-center justify-center h-12 px-8 rounded-lg bg-[#8B1E3F] text-white font-semibold hover:bg-[#6B1530] transition-colors text-base">Start planning</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/landing.js') }}?v=20261023_rev6" defer></script>
+{% endblock %}

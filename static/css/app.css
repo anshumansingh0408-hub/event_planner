@@ -59,6 +59,126 @@ select {
   min-width: 44px;
 }
 
+/* Visual System Scales */
+.h1-hero {
+  font-family: 'Fraunces', serif !important;
+  font-weight: 700 !important;
+  font-size: clamp(2.25rem, 5vw, 3.5rem) !important;
+  line-height: 1.15 !important;
+  color: #1F1720 !important;
+}
+
+.h2-title {
+  font-family: 'Fraunces', serif !important;
+  font-weight: 700 !important;
+  font-size: 2rem !important;
+  line-height: 1.25 !important;
+  color: #1F1720 !important;
+}
+
+.body-lead {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 1.0625rem !important;
+  line-height: 1.65 !important;
+  max-width: 65ch !important;
+  color: #5B5160 !important;
+}
+
+/* Button Classes: 48px height, maroon primary, white with maroon border secondary */
+.btn-primary {
+  min-height: 48px !important;
+  height: 48px !important;
+  padding: 0 1.5rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  text-decoration: none !important;
+  background-color: #8B1E3F !important;
+  color: #ffffff !important;
+  border: 1px solid #8B1E3F !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease, transform 0.1s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.btn-primary:hover {
+  background-color: #6B1530 !important;
+  border-color: #6B1530 !important;
+  color: #ffffff !important;
+}
+
+.btn-secondary {
+  min-height: 48px !important;
+  height: 48px !important;
+  padding: 0 1.5rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  text-decoration: none !important;
+  background-color: #ffffff !important;
+  color: #8B1E3F !important;
+  border: 2px solid #8B1E3F !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease, transform 0.1s ease !important;
+}
+
+.btn-secondary:hover {
+  background-color: #F7F4F5 !important;
+  color: #6B1530 !important;
+}
+
+/* Card System: white, 1px #E4DDE0 border, 12px radius, no heavy shadows */
+.utsav-card {
+  background-color: #ffffff !important;
+  border: 1px solid #E4DDE0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Section Rhythm Alternation */
+.section-rhythm-white {
+  background-color: #ffffff !important;
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+}
+
+.section-rhythm-panel {
+  background-color: #F7F4F5 !important;
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+}
+
+@media (min-width: 768px) {
+  .section-rhythm-white,
+  .section-rhythm-panel {
+    padding-top: 64px !important;
+    padding-bottom: 64px !important;
+  }
+}
+
+.content-container {
+  max-width: 1120px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+@media (min-width: 640px) {
+  .content-container {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+}
+
 /* Table container for responsive horizontal scrolling */
 .table-container {
   width: 100%;
@@ -86,6 +206,7 @@ select {
     font-size: 12pt;
   }
 
+  header,
   header nav,
   #tab-list,
   button,

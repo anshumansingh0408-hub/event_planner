@@ -39,8 +39,8 @@ class TestApp(unittest.TestCase):
         }
 
     def test_get_html_routes_and_healthz(self) -> None:
-        """Verify GET /, /plan, /about, and /healthz all return HTTP 200."""
-        for path in ("/", "/plan", "/about", "/healthz"):
+        """Verify GET /, /create, /plan, /about, and /healthz all return HTTP 200."""
+        for path in ("/", "/create", "/plan", "/about", "/healthz"):
             resp = self.client.get(path)
             self.assertEqual(resp.status_code, 200, f"Path {path} did not return 200")
         healthz_json = self.client.get("/healthz").get_json()
@@ -280,13 +280,14 @@ class TestApp(unittest.TestCase):
             "/static/js/common.js",
             "/static/js/form.js",
             "/static/js/plan.js",
+            "/static/js/landing.js",
         ):
             resp = self.client.get(path)
             self.assertEqual(resp.status_code, 200, f"Asset {path} did not return 200")
 
-    def test_index_page_elements(self) -> None:
-        """Verify GET / contains skip link, main landmark, event type fieldset, and Build button."""
-        resp = self.client.get("/")
+    def test_create_page_elements(self) -> None:
+        """Verify GET /create contains skip link, main landmark, event type, and Build button."""
+        resp = self.client.get("/create")
         self.assertEqual(resp.status_code, 200)
         html = resp.get_data(as_text=True)
         self.assertIn("Skip to main content", html)
@@ -325,6 +326,64 @@ class TestApp(unittest.TestCase):
                     content,
                     f"Forbidden .innerHTML found in {os.path.basename(fpath)}",
                 )
+
+    def test_get_landing_page(self) -> None:
+        """Verify GET / returns 200, h1 title, link to /create, and How it works anchor."""
+        resp = self.client.get("/")
+        self.assertEqual(resp.status_code, 200)
+        html = resp.get_data(as_text=True)
+        self.assertIn("Plan a wedding, birthday or community event in one place.", html)
+        self.assertIn('href="/create"', html)
+        self.assertIn("How it works", html)
+
+    def test_get_create_page(self) -> None:
+        """Verify GET /create returns 200, event-type fieldset, and Build my plan button."""
+        resp = self.client.get("/create")
+        self.assertEqual(resp.status_code, 200)
+        html = resp.get_data(as_text=True)
+        self.assertIn("<fieldset", html)
+        self.assertIn("Type of event", html)
+        self.assertIn("Build my plan", html)
+
+    def test_about_page_and_splits_table(self) -> None:
+        """Verify GET /about contains 3 event types, valid lead times, and column sums of 100."""
+        resp = self.client.get("/about")
+        self.assertEqual(resp.status_code, 200)
+        html = resp.get_data(as_text=True)
+        for etype in ("wedding", "birthday", "community"):
+            self.assertIn(etype, html.lower())
+        self.assertIn("365 days", html)
+        self.assertIn("60 days", html)
+        self.assertIn("90 days", html)
+
+        import re
+        for col_class in ("pct-wedding", "pct-birthday", "pct-community"):
+            matches = re.findall(rf'class="[^"]*{col_class}[^"]*">([\d.]+)%</td>', html)
+            self.assertTrue(len(matches) > 0, f"No matches found for {col_class}")
+            total = sum(float(m) for m in matches)
+            self.assertAlmostEqual(total, 100.0, places=1, msg=f"Col {col_class} sum != 100")
+
+    def test_pretty_category_filter(self) -> None:
+        """Verify pretty_category filter transforms snake_case identifiers correctly."""
+        from app import pretty_category
+        self.assertEqual(pretty_category("attire_beauty"), "Attire & beauty")
+        self.assertEqual(pretty_category("sound_av"), "Sound & AV")
+        self.assertEqual(pretty_category("venue"), "Venue")
+
+    def test_no_disallowed_strings_in_templates(self) -> None:
+        """Verify no template contains disallowed strings: 85%, On Track, or Tier Assessed."""
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        tmpl_dir = os.path.join(base_dir, "templates")
+        for fname in os.listdir(tmpl_dir):
+            if fname.endswith(".html"):
+                fpath = os.path.join(tmpl_dir, fname)
+                with open(fpath, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    self.assertNotIn("85%", content, f"'85%' found in {fname}")
+                    self.assertNotIn("On Track", content, f"'On Track' found in {fname}")
+                    self.assertNotIn(
+                        "Tier Assessed", content, f"'Tier Assessed' found in {fname}"
+                    )
 
 
 if __name__ == "__main__":

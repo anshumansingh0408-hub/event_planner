@@ -3,48 +3,158 @@
 {% block title %}About Utsav - Celebration & Event Planner{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto space-y-8">
-  <div class="border-b border-panel-border pb-4">
-    <h1 class="text-3xl sm:text-4xl font-serif font-bold text-ink tracking-tight mb-2">About Utsav</h1>
-    <p class="text-base text-muted">A practical planning tool for Indian celebrations and community gatherings.</p>
-  </div>
+<div class="max-w-[1120px] mx-auto px-4 sm:px-6 py-10 md:py-16 space-y-12">
+  <!-- 1. What Utsav is -->
+  <section class="space-y-4 max-w-3xl">
+    <h1 class="h1-hero text-ink tracking-tight">About Utsav</h1>
+    <p class="body-lead">
+      Utsav is an independent event planning application for Indian celebrations, including weddings, birthdays, and community gatherings. It turns a few basic inputs into a complete, structured plan with realistic budget splits, countdown deadlines, and vendor negotiation checklists. Everything runs in your browser without requiring an account or collecting personal data.
+    </p>
+  </section>
 
-  <div class="space-y-6 text-sm text-ink leading-relaxed">
-    <!-- 1. What it does -->
-    <section class="space-y-2">
-      <h2 class="text-lg font-serif font-bold text-primary">What it does</h2>
-      <p class="text-muted">
-        Utsav takes your event type, total budget, guest count, and celebration date to build a concrete starting plan. It provides a percentage-based budget breakdown in whole Indian Rupees, a milestone countdown timeline, and categorized vendor checklists with interview questions.
-      </p>
-    </section>
+  <!-- 2. The problem -->
+  <section class="utsav-card p-6 sm:p-8 space-y-3">
+    <h2 class="h2-title text-ink text-2xl">The problem</h2>
+    <p class="body-lead">
+      Planning a major celebration usually means juggling money, dates, and vendor quotes across scattered spreadsheets, note apps, and endless WhatsApp chat threads. Key details get lost, budgets blow out unexpectedly, and organizers scramble as the event date draws closer. Utsav brings these separate threads together into a single, cohesive plan where numbers, countdowns, and checklists stay aligned.
+    </p>
+  </section>
 
-    <!-- 2. How the numbers are calculated -->
-    <section class="space-y-2">
-      <h2 class="text-lg font-serif font-bold text-primary">How the numbers are calculated</h2>
-      <p class="text-muted">
-        Budget allocations are based on empirical planning assumptions across weddings, birthdays, and community gatherings. When you pick up to two priority categories, each receives a 5 percentage point increase funded proportionally from non-priority categories (excluding contingency), and rounding drift is balanced so amounts sum exactly to your total budget. The countdown timeline calculates milestone deadlines backwards from your event date. If an event is scheduled on short notice, overdue milestones are evenly rescheduled across the initial 40% of remaining days.
-      </p>
-    </section>
+  <!-- 3. How your plan is built -->
+  <section class="space-y-6">
+    <div class="max-w-2xl">
+      <h2 class="h2-title text-ink text-2xl">How your plan is built</h2>
+      <p class="text-sm text-muted mt-1">The deterministic rules engine handles all calculations; the AI only assists with creative ideas and questions.</p>
+    </div>
 
-    <!-- 3. Where AI is used -->
-    <section class="space-y-2">
-      <h2 class="text-lg font-serif font-bold text-primary">Where AI is used</h2>
-      <p class="text-muted">
-        Google Gemini AI is used exclusively in the Ideas and Ask tabs to suggest creative themes, menu concepts, and answer specific questions. The AI receives a compact summary of your computed plan and never alters the calculated budget or timeline numbers. If the AI service is unreachable or unconfigured, Utsav automatically provides comprehensive rule-based fallback ideas.
-      </p>
-    </section>
+    <!-- 4-step flow drawn with HTML/CSS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="utsav-card p-5 space-y-2 border-l-4 border-l-primary">
+        <span class="text-xs font-bold text-primary uppercase tracking-wider">Step 1</span>
+        <h3 class="text-base font-semibold text-ink">Your inputs</h3>
+        <p class="text-xs text-muted leading-relaxed">Event type, budget, guest count, celebration date, and priorities.</p>
+      </div>
 
-    <!-- 4. Limits -->
-    <section class="space-y-2">
-      <h2 class="text-lg font-serif font-bold text-primary">Limits</h2>
-      <p class="text-muted">
-        Actual vendor rates fluctuate significantly across different Indian cities, peak wedding dates, and festive seasons. All figures and checklists are structured estimates intended to guide your preparations. They do not constitute official vendor quotes and do not replace professional event coordination for high-complexity gatherings.
-      </p>
-    </section>
-  </div>
+      <div class="utsav-card p-5 space-y-2 border-l-4 border-l-primary">
+        <span class="text-xs font-bold text-primary uppercase tracking-wider">Step 2</span>
+        <h3 class="text-base font-semibold text-ink">Rules engine</h3>
+        <p class="text-xs text-muted leading-relaxed">Pure deterministic logic computes the budget split, timeline, and vendor checklist.</p>
+      </div>
 
-  <div class="pt-4 border-t border-panel-border">
-    <a href="/" class="touch-target inline-flex items-center px-4 py-2 bg-primary text-white font-medium text-sm rounded-md hover:bg-primary-dark transition-colors">Start planning an event</a>
+      <div class="utsav-card p-5 space-y-2 border-l-4 border-l-primary">
+        <span class="text-xs font-bold text-primary uppercase tracking-wider">Step 3</span>
+        <h3 class="text-base font-semibold text-ink">AI ideas</h3>
+        <p class="text-xs text-muted leading-relaxed">Gemini writes creative theme, menu, and decor ideas on demand without touching numbers.</p>
+      </div>
+
+      <div class="utsav-card p-5 space-y-2 border-l-4 border-l-primary">
+        <span class="text-xs font-bold text-primary uppercase tracking-wider">Step 4</span>
+        <h3 class="text-base font-semibold text-ink">Your plan</h3>
+        <p class="text-xs text-muted leading-relaxed">An actionable, printable celebration roadmap grounded in your real budget and timeline.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. The assumptions behind the numbers -->
+  <section class="space-y-4">
+    <div class="max-w-2xl">
+      <h2 class="h2-title text-ink text-2xl">The assumptions behind the numbers</h2>
+      <p class="text-sm text-muted mt-1">Budget percentages and countdown lead times derived from empirical event planning heuristics across India.</p>
+    </div>
+
+    <div class="utsav-card p-6 overflow-hidden">
+      <div class="table-container">
+        <table class="w-full text-left border-collapse text-sm" id="assumptions-table">
+          <caption class="text-xs text-muted pb-4 text-left font-medium">These are planning assumptions, not official figures.</caption>
+          <thead>
+            <tr class="bg-[#F7F4F5] border-b border-[#E4DDE0] text-xs uppercase tracking-wider text-muted font-semibold">
+              <th scope="col" class="py-3 px-4">Category</th>
+              <th scope="col" class="py-3 px-4 text-right">Wedding (%)</th>
+              <th scope="col" class="py-3 px-4 text-right">Birthday (%)</th>
+              <th scope="col" class="py-3 px-4 text-right">Community event (%)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#E4DDE0]">
+            {% for cat in categories %}
+            <tr class="hover:bg-[#F7F4F5]/50 transition-colors">
+              <td class="py-2.5 px-4 font-medium text-ink">{{ cat|pretty_category }}</td>
+              <td class="py-2.5 px-4 text-right text-muted pct-wedding">{{ splits['wedding'].get(cat, 0.0) }}%</td>
+              <td class="py-2.5 px-4 text-right text-muted pct-birthday">{{ splits['birthday'].get(cat, 0.0) }}%</td>
+              <td class="py-2.5 px-4 text-right text-muted pct-community">{{ splits['community'].get(cat, 0.0) }}%</td>
+            </tr>
+            {% endfor %}
+            <!-- Timeline length in days from lead_times -->
+            <tr class="bg-[#F7F4F5] font-semibold border-t-2 border-[#E4DDE0] text-ink">
+              <td class="py-3 px-4">Timeline length</td>
+              <td class="py-3 px-4 text-right">{{ lead_times['wedding'] }} days</td>
+              <td class="py-3 px-4 text-right">{{ lead_times['birthday'] }} days</td>
+              <td class="py-3 px-4 text-right">{{ lead_times['community'] }} days</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. What the AI does, and what it doesn't -->
+  <section class="space-y-4">
+    <div class="max-w-2xl">
+      <h2 class="h2-title text-ink text-2xl">What the AI does, and what it doesn't</h2>
+      <p class="body-lead mt-1">We maintain a strict boundary between quantitative planning logic and generative suggestions.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="utsav-card p-6 space-y-3">
+        <h3 class="text-base font-semibold text-ink flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <span>What the AI does</span>
+        </h3>
+        <p class="text-sm text-muted leading-relaxed">
+          When requested, Gemini drafts creative celebration themes, catering menu possibilities, decor concepts, and attendee activities. It also answers plain-language questions by reading your computed plan summary.
+        </p>
+      </div>
+
+      <div class="utsav-card p-6 space-y-3">
+        <h3 class="text-base font-semibold text-ink flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-primary"></span>
+          <span>What the AI does not do</span>
+        </h3>
+        <p class="text-sm text-muted leading-relaxed">
+          The AI is never allowed to modify your budget figures, change calendar dates, invent vendor names, quote binding market prices, or book suppliers. If Gemini is unreachable, Utsav provides curated rule-based fallback ideas.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Privacy -->
+  <section class="utsav-card p-6 sm:p-8 space-y-3">
+    <h2 class="h2-title text-ink text-2xl">Privacy</h2>
+    <p class="body-lead">
+      Utsav requires no user accounts and stores no saved plans on server disks. Your plan parameters remain entirely within your browser session. When you click "Get ideas" or "Ask", a compact summary of your plan numbers along with your note or question is securely sent to Google's Gemini API over HTTPS. Recent AI responses are cached in server memory for up to 15 minutes to prevent redundant network calls, and are discarded thereafter.
+    </p>
+  </section>
+
+  <!-- 7. Limits -->
+  <section class="utsav-card p-6 sm:p-8 space-y-3">
+    <h2 class="h2-title text-ink text-2xl">Limits</h2>
+    <ul class="list-disc list-inside space-y-2 text-sm text-muted">
+      <li>All calculations and estimates are denominated in Indian Rupees (INR, ₹). Other currencies are not currently supported.</li>
+      <li>Interface and AI responses are currently provided in English only.</li>
+      <li>Market prices fluctuate significantly depending on city tier, season peak dates, and vendor reputation. Confirm formal quotes directly with vendors.</li>
+      <li>Utsav does not operate a vendor database, directory, or direct booking mechanism.</li>
+      <li>The application is a self-serve planning aid and is not a replacement for a professional on-site wedding planner or event director for complex celebrations.</li>
+    </ul>
+  </section>
+
+  <!-- 8. Built with -->
+  <section class="p-6 bg-[#F7F4F5] border border-[#E4DDE0] rounded-xl text-center space-y-2">
+    <h2 class="text-sm font-semibold uppercase tracking-wider text-muted">Built with</h2>
+    <p class="text-base text-ink font-medium">Python, Flask, Google Gemini, Tailwind CSS</p>
+  </section>
+
+  <!-- Start planning button -->
+  <div class="pt-4 text-center">
+    <a href="/create" class="btn-primary inline-flex text-base">Start planning an event</a>
   </div>
 </div>
 {% endblock %}

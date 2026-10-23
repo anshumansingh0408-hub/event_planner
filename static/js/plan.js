@@ -12,7 +12,7 @@ let currentInputs = null;
 function initPlan() {
   currentInputs = loadSession('utsav.inputs');
   if (!currentInputs) {
-    window.location.replace('/');
+    window.location.replace('/create');
     return;
   }
   setupTabs();
@@ -131,8 +131,7 @@ const BAR_COLORS = {
  */
 function renderPlanHeader(plan) {
   const title = document.getElementById('plan-title');
-  const typeStr = plan.event_type.charAt(0).toUpperCase() + plan.event_type.slice(1);
-  if (title) title.textContent = `Your ${typeStr} plan`;
+  if (title) title.textContent = `Your ${plan.event_type} plan`;
   const line = document.getElementById('plan-summary-line');
   const dateStr = formatDate(plan.event_date);
   if (line) {
@@ -143,46 +142,44 @@ function renderPlanHeader(plan) {
     if (notice) notice.classList.remove('hidden');
   }
 
-  // Populate MeetCraft Dashboard Overview Cards
-  const legGuests = document.getElementById('legend-guests');
-  if (legGuests) legGuests.textContent = `${plan.guests} Guests`;
-  const legBudget = document.getElementById('legend-budget');
-  if (legBudget) legBudget.textContent = `${plan.total_display}`;
-  const legVendors = document.getElementById('legend-vendors');
-  if (legVendors && plan.vendor_checklist) legVendors.textContent = `${plan.vendor_checklist.length} Vendors`;
-  const legMiles = document.getElementById('legend-milestones');
-  if (legMiles && plan.timeline) legMiles.textContent = `${plan.timeline.length} Steps`;
+  // Populate 4 Plain Summary Tiles
+  // Tile 1: Days to go & urgency
+  const tileDays = document.getElementById('tile-days-left');
+  if (tileDays) tileDays.textContent = `${plan.days_until_event} days`;
+  const tileUrg = document.getElementById('tile-urgency');
+  if (tileUrg) {
+    const urgText = plan.urgency.charAt(0).toUpperCase() + plan.urgency.slice(1);
+    tileUrg.textContent = urgText;
+  }
 
-  const ovTotal = document.getElementById('overview-total-budget');
-  if (ovTotal) ovTotal.textContent = plan.total_display;
-  const ovDays = document.getElementById('overview-days-badge');
-  if (ovDays) ovDays.textContent = `${plan.days_until_event} Days Left`;
+  // Tile 2: Total budget
+  const tileBudget = document.getElementById('tile-total-budget');
+  if (tileBudget) tileBudget.textContent = plan.total_display;
 
-  // Contingency vs Allocated
-  const contingencyPct = plan.budget_percentages ? (plan.budget_percentages.contingency || 0) : 0;
-  const allocatedPct = Math.max(0, 100 - contingencyPct);
-  const barAlloc = document.getElementById('overview-bar-allocated');
-  if (barAlloc) barAlloc.style.width = `${allocatedPct}%`;
-  const barCont = document.getElementById('overview-bar-contingency');
-  if (barCont) barCont.style.width = `${contingencyPct}%`;
+  // Tile 3: Per guest
+  renderPerGuestBox(plan.per_guest);
 
-  const contAmt = plan.budget ? (plan.budget.contingency || 0) : 0;
-  const totalAmt = plan.total_budget || 0;
-  const allocAmt = Math.max(0, totalAmt - contAmt);
-
-  const ovAlloc = document.getElementById('overview-allocated-amt');
-  if (ovAlloc) ovAlloc.textContent = `₹${Math.round(allocAmt).toLocaleString('en-IN')}`;
-  const ovCont = document.getElementById('overview-contingency-amt');
-  if (ovCont) ovCont.textContent = `₹${Math.round(contAmt).toLocaleString('en-IN')}`;
+  // Tile 4: Checklist progress initial count
+  const storageKey = `utsav.checks.${hashString(JSON.stringify(currentInputs))}`;
+  const savedChecks = loadJSON(storageKey) || {};
+  const totalTasks = plan.vendor_checklist
+    ? plan.vendor_checklist.reduce((acc, v) => acc + (v.tasks ? v.tasks.length : 0), 0)
+    : 0;
+  const doneTasks = Object.keys(savedChecks).filter((k) => savedChecks[k]).length;
+  const tileProgress = document.getElementById('tile-checklist-progress');
+  if (tileProgress) tileProgress.textContent = `${doneTasks} of ${totalTasks} tasks done`;
 }
 
 /**
- * Formats a snake_case key into readable Title Case.
+ * Formats a snake_case key into readable Title Case with ampersands and capitalized AV.
  * @param {string} str
  * @returns {string}
  */
 function formatTitle(str) {
-  return str.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  if (!str) return '';
+  const text = str.replace(/_/g, ' & ');
+  const capitalized = text.charAt(0).toUpperCase() + text.slice(1);
+  return capitalized.replace(/\bAv\b/g, 'AV').replace(/\bav\b/g, 'AV');
 }
 
 /**
@@ -249,10 +246,14 @@ function createBarRow(cat, pct) {
  * @param {object} pg
  */
 function renderPerGuestBox(pg) {
+  if (!pg) return;
   const tier = document.getElementById('per-guest-tier');
   if (tier) tier.textContent = pg.level.charAt(0).toUpperCase() + pg.level.slice(1);
   const amt = document.getElementById('per-guest-amount');
-  if (amt) amt.textContent = `₹${pg.per_guest.toLocaleString('en-IN')}`;
+  if (amt) {
+    const wholeRupees = Math.round(pg.per_guest).toLocaleString('en-IN');
+    amt.textContent = `₹${wholeRupees}`;
+  }
   const adv = document.getElementById('per-guest-advice');
   if (adv) adv.textContent = pg.advice;
 }
@@ -432,6 +433,10 @@ function updateVendorProgress() {
   const progress = document.getElementById('vendor-progress');
   if (progress) {
     progress.textContent = `${done} of ${cbs.length} tasks done`;
+  }
+  const tileProgress = document.getElementById('tile-checklist-progress');
+  if (tileProgress) {
+    tileProgress.textContent = `${done} of ${cbs.length} tasks done`;
   }
 }
 

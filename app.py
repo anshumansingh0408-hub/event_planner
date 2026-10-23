@@ -25,7 +25,12 @@ from ai_client import (
     answer_question,
     generate_ideas,
 )
-from planner import BUDGET_SPLITS, EVENT_TYPES, generate_plan
+from planner import (
+    BUDGET_SPLITS,
+    EVENT_TYPES,
+    TIMELINE_TEMPLATES,
+    generate_plan,
+)
 from utils import (
     check_rate_limit,
     format_inr,
@@ -37,6 +42,24 @@ app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
 Compress(app)
 app.config["MAX_CONTENT_LENGTH"] = 32 * 1024
+
+
+def pretty_category(val: str) -> str:
+    """Format snake_case category into title display format with ampersands.
+
+    Args:
+        val: Raw snake_case category identifier.
+
+    Returns:
+        Formatted human-readable category name.
+    """
+    if not val:
+        return ""
+    text = val.replace("_", " & ").capitalize()
+    return text.replace("Av", "AV").replace("av", "AV")
+
+
+app.jinja_env.filters["pretty_category"] = pretty_category
 
 APP_CONFIG = {
     "RATE_LIMIT_GENERAL": 30,
@@ -178,10 +201,39 @@ def serialize_plan(plan: Dict[str, Any], cleaned: Dict[str, Any]) -> Dict[str, A
     return res
 
 
+def about_context() -> Dict[str, Any]:
+    """Build dynamic context dictionary for About page from planner constants.
+
+    Returns:
+        Dictionary containing budget splits, lead times, and categories.
+    """
+    lead_times = {
+        etype: max(item[0] for item in TIMELINE_TEMPLATES[etype])
+        for etype in EVENT_TYPES
+    }
+    all_cats: List[str] = []
+    for etype in EVENT_TYPES:
+        for cat in BUDGET_SPLITS[etype]:
+            if cat not in all_cats:
+                all_cats.append(cat)
+    return {
+        "splits": BUDGET_SPLITS,
+        "lead_times": lead_times,
+        "categories": all_cats,
+    }
+
+
 @app.route("/", methods=["GET"])
 def index() -> str:
-    """Render primary celebration landing page."""
-    return render_template("index.html")
+    """Render primary celebration landing page with lead times context."""
+    ctx = about_context()
+    return render_template("landing.html", lead_times=ctx["lead_times"])
+
+
+@app.route("/create", methods=["GET"])
+def create() -> str:
+    """Render event intake questionnaire and configuration form."""
+    return render_template("create.html")
 
 
 @app.route("/plan", methods=["GET"])
@@ -193,7 +245,8 @@ def plan_page() -> str:
 @app.route("/about", methods=["GET"])
 def about() -> str:
     """Render information and architecture overview page."""
-    return render_template("about.html")
+    ctx = about_context()
+    return render_template("about.html", **ctx)
 
 
 @app.route("/healthz", methods=["GET"])

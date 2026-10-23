@@ -3,115 +3,78 @@
 {% block title %}Your event plan - Utsav{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
+<div class="max-w-[1120px] mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-6">
   <!-- Status / Loading Indicator -->
   <div id="plan-loading" class="p-8 text-center text-muted" aria-live="polite">
     <p class="text-base font-medium">Generating your plan...</p>
   </div>
 
   <!-- Plan Error Display -->
-  <div id="plan-error" class="hidden p-6 rounded-lg border border-status-urgent-text bg-status-urgent-bg text-status-urgent-text space-y-3" role="alert">
+  <div id="plan-error" class="hidden p-6 rounded-xl border border-status-urgent-text bg-status-urgent-bg text-status-urgent-text space-y-3" role="alert">
     <h2 class="text-base font-semibold" id="plan-error-heading">Unable to generate plan</h2>
     <p id="plan-error-message" class="text-sm"></p>
     <div>
-      <a href="/" class="inline-block px-4 py-2 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary-dark transition-colors">Back to the form</a>
+      <a href="/create" class="btn-primary inline-flex text-sm !min-h-[40px] px-4 py-2">Back to the form</a>
     </div>
   </div>
 
   <!-- Plan Main Content -->
   <div id="plan-container" class="hidden space-y-6">
     <!-- Header summary -->
-    <div class="border-b border-panel-border pb-4 space-y-3">
+    <div class="border-b border-[#E4DDE0] pb-4 space-y-3">
       <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <h1 id="plan-title" class="text-3xl sm:text-4xl font-serif font-bold text-ink tracking-tight mb-1">Your event plan</h1>
           <p id="plan-summary-line" class="text-sm sm:text-base text-muted"></p>
         </div>
         <div class="flex items-center gap-2.5 flex-wrap no-print">
-          <a href="/" class="touch-target inline-flex items-center px-4 py-2 bg-white border border-panel-border text-ink font-medium text-sm rounded-md hover:bg-panel transition-colors">Edit details</a>
-          <button type="button" id="btn-print" class="touch-target inline-flex items-center px-4 py-2 bg-white border border-panel-border text-ink font-medium text-sm rounded-md hover:bg-panel transition-colors">Print or save as PDF</button>
+          <a href="/create" class="btn-secondary inline-flex items-center justify-center !min-h-[40px] h-10 px-4 py-2 text-sm font-semibold rounded-lg bg-white text-[#8B1E3F] border-2 border-[#8B1E3F] hover:bg-[#F7F4F5] transition-colors">Edit details</a>
+          <button type="button" id="btn-print" class="btn-secondary inline-flex items-center justify-center !min-h-[40px] h-10 px-4 py-2 text-sm font-semibold rounded-lg bg-white text-[#8B1E3F] border-2 border-[#8B1E3F] hover:bg-[#F7F4F5] transition-colors">Print or save as PDF</button>
         </div>
       </div>
 
       <!-- Tight Timeline Alert -->
-      <div id="tight-notice" class="hidden p-4 rounded-md border border-status-compressed-text bg-status-compressed-bg text-status-compressed-text text-sm font-medium">
+      <div id="tight-notice" class="hidden p-4 rounded-xl border border-status-compressed-text bg-status-compressed-bg text-status-compressed-text text-sm font-medium">
         This event is under 30 days away. Tasks that were already overdue have been rescheduled into the coming days, shown as 'Rescheduled'.
       </div>
     </div>
 
-    <!-- MeetCraft Overview Dashboard Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="dashboard-overview-cards">
-      <!-- 1. Event Status & Gauge -->
-      <div class="p-5 bg-white border border-panel-border rounded-xl shadow-sm flex flex-col justify-between space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Event Status</h2>
-          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-status-upcoming-bg text-status-upcoming-text">On Track</span>
-        </div>
-        <div class="py-1">
-          <svg viewBox="0 0 120 70" class="w-36 h-20 mx-auto" aria-hidden="true">
-            <path d="M 15 60 A 45 45 0 0 1 105 60" fill="none" stroke="#F1EAEF" stroke-width="11" stroke-linecap="round" />
-            <path id="gauge-arc-fill" d="M 15 60 A 45 45 0 0 1 105 60" fill="none" stroke="#8B1E3F" stroke-width="11" stroke-linecap="round" stroke-dasharray="141.37" stroke-dashoffset="21.2" />
-          </svg>
-          <div class="text-center -mt-7 mb-1">
-            <span id="gauge-percent-val" class="text-2xl font-bold font-serif text-ink tracking-tight">85%</span>
-            <span class="block text-xs font-semibold text-muted uppercase tracking-wider">Plan Ready</span>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-xs pt-3 border-t border-panel-border text-muted">
-          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></span><span id="legend-guests">Guests</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-600 shrink-0"></span><span id="legend-budget">Budget</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span><span id="legend-vendors">Vendors</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0"></span><span id="legend-milestones">Milestones</span></div>
-        </div>
+    <!-- Summary Tiles: One row of four plain tiles (2x2 on mobile) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="plan-summary-tiles">
+      <!-- Tile 1: Days to go -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-1 shadow-sm">
+        <span class="text-xs font-semibold text-muted uppercase tracking-wider">Days to go</span>
+        <p id="tile-days-left" class="text-2xl sm:text-3xl font-serif font-bold text-ink"></p>
+        <p id="tile-urgency" class="text-xs text-muted font-medium"></p>
       </div>
 
-      <!-- 2. Budget Overview Card -->
-      <div class="p-5 bg-white border border-panel-border rounded-xl shadow-sm flex flex-col justify-between space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Total Budget</h2>
-          <span id="overview-days-badge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-panel text-ink border border-panel-border"></span>
-        </div>
-        <div class="space-y-1">
-          <p id="overview-total-budget" class="text-2xl sm:text-3xl font-serif font-bold text-ink"></p>
-          <p class="text-xs text-muted">Categorized across primary expenses & contingency</p>
-        </div>
-        <div class="space-y-2 pt-2">
-          <div class="w-full h-3 bg-panel rounded-full overflow-hidden flex" aria-hidden="true">
-            <div id="overview-bar-allocated" class="h-full bg-primary" style="width: 90%;"></div>
-            <div id="overview-bar-contingency" class="h-full bg-amber-500" style="width: 10%;"></div>
-          </div>
-          <div class="flex items-center justify-between text-xs text-muted pt-1 border-t border-panel-border">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-primary"></span>
-              <span>Allocated: <strong id="overview-allocated-amt" class="text-ink font-semibold"></strong></span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-              <span>Reserve: <strong id="overview-contingency-amt" class="text-ink font-semibold"></strong></span>
-            </div>
-          </div>
-        </div>
+      <!-- Tile 2: Total budget -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-1 shadow-sm">
+        <span class="text-xs font-semibold text-muted uppercase tracking-wider">Total budget</span>
+        <p id="tile-total-budget" class="text-2xl sm:text-3xl font-serif font-bold text-ink"></p>
+        <p class="text-xs text-muted">Across all categories</p>
       </div>
 
-      <!-- 3. Per Guest Card (Keeping ID per-guest-card) -->
-      <div id="per-guest-card" class="p-5 bg-white border border-panel-border rounded-xl shadow-sm flex flex-col justify-between space-y-3">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Per-Guest Allocation</h2>
-          <span id="per-guest-tier" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-panel border border-panel-border text-ink"></span>
+      <!-- Tile 3: Per guest -->
+      <div id="per-guest-card" class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-1 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-muted uppercase tracking-wider">Per guest</span>
+          <span id="per-guest-tier" class="text-xs font-semibold text-primary"></span>
         </div>
-        <div class="space-y-1">
-          <p id="per-guest-amount" class="text-2xl sm:text-3xl font-serif font-bold text-primary"></p>
-          <p id="per-guest-advice" class="text-xs sm:text-sm text-muted leading-relaxed"></p>
-        </div>
-        <div class="pt-2 border-t border-panel-border text-xs text-muted flex items-center justify-between">
-          <span>Planning Adequacy</span>
-          <span class="text-ink font-medium">INR Tier Assessed</span>
-        </div>
+        <p id="per-guest-amount" class="text-2xl sm:text-3xl font-serif font-bold text-primary"></p>
+        <p id="per-guest-advice" class="text-xs text-muted line-clamp-2"></p>
+      </div>
+
+      <!-- Tile 4: Checklist progress -->
+      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-1 shadow-sm">
+        <span class="text-xs font-semibold text-muted uppercase tracking-wider">Checklist progress</span>
+        <p id="tile-checklist-progress" class="text-base sm:text-lg font-serif font-bold text-ink leading-tight pt-1">0 of 0 tasks done</p>
+        <p class="text-xs text-muted">From saved checklist</p>
       </div>
     </div>
 
     <!-- Tabs Navigation -->
-    <div class="border-b border-panel-border" id="tab-nav-wrapper">
+    <div class="border-b border-[#E4DDE0]" id="tab-nav-wrapper">
       <div role="tablist" id="tab-list" class="flex gap-2 sm:gap-6 overflow-x-auto -mb-px" aria-label="Event plan sections">
         <button type="button" role="tab" id="tab-budget" aria-selected="true" aria-controls="panel-budget" tabindex="0" class="py-3 px-2 text-sm font-semibold border-b-2 border-primary text-primary whitespace-nowrap">Budget</button>
         <button type="button" role="tab" id="tab-timeline" aria-selected="false" aria-controls="panel-timeline" tabindex="-1" class="py-3 px-2 text-sm font-medium text-muted hover:text-ink whitespace-nowrap">Timeline</button>
@@ -134,17 +97,17 @@
               <h3 class="text-sm font-semibold text-ink">Financial Breakdown</h3>
               <span class="text-xs text-muted">Itemized category shares</span>
             </div>
-            <div class="table-container border border-panel-border rounded-xl bg-white shadow-sm overflow-hidden">
+            <div class="table-container border border-[#E4DDE0] rounded-xl bg-white overflow-hidden">
               <table class="w-full text-left border-collapse text-sm">
                 <caption class="sr-only">Detailed allocation of event budget across categories</caption>
                 <thead>
-                  <tr class="bg-panel border-b border-panel-border text-xs uppercase tracking-wider text-muted font-semibold">
+                  <tr class="bg-[#F7F4F5] border-b border-[#E4DDE0] text-xs uppercase tracking-wider text-muted font-semibold">
                     <th scope="col" class="py-3 px-4">Category</th>
                     <th scope="col" class="py-3 px-4 w-28 text-right">Share (%)</th>
                     <th scope="col" class="py-3 px-4 w-36 text-right">Amount (₹)</th>
                   </tr>
                 </thead>
-                <tbody id="budget-table-body" class="divide-y divide-panel-border"></tbody>
+                <tbody id="budget-table-body" class="divide-y divide-[#E4DDE0]"></tbody>
               </table>
             </div>
           </div>
@@ -155,7 +118,7 @@
               <h3 class="text-sm font-semibold text-ink">Visual Distribution</h3>
               <span class="text-xs text-muted">Expenditure weight</span>
             </div>
-            <div class="p-5 bg-white border border-panel-border rounded-xl shadow-sm space-y-3.5">
+            <div class="p-5 utsav-card space-y-3.5">
               <div id="budget-bars" class="space-y-3" aria-hidden="true"></div>
             </div>
           </div>
@@ -167,7 +130,7 @@
         <h2 class="hidden print-section-title">Countdown Timeline</h2>
 
         <!-- Do Next Section -->
-        <div id="do-next-section" class="p-5 bg-white border border-panel-border rounded-xl shadow-sm space-y-3">
+        <div id="do-next-section" class="p-5 utsav-card space-y-3">
           <div class="flex items-center justify-between">
             <h3 class="text-sm font-semibold text-ink">Immediate Next Priorities</h3>
             <span class="text-xs text-muted">Up next on schedule</span>
@@ -196,10 +159,10 @@
 
       <!-- 4. IDEAS PANEL -->
       <div role="tabpanel" id="panel-ideas" aria-labelledby="tab-ideas" tabindex="0" hidden class="outline-none space-y-6">
-        <div id="ideas-intro" class="p-6 bg-white border border-panel-border rounded-xl shadow-sm space-y-4">
+        <div id="ideas-intro" class="p-6 utsav-card space-y-4">
           <h3 class="text-base font-serif font-bold text-ink">AI-Generated Celebration Concepts</h3>
           <p class="text-sm text-muted">Generate bespoke themes, catering menus, and activities customized to your event parameters using Gemini AI.</p>
-          <button type="button" id="btn-get-ideas" class="touch-target px-5 py-2.5 bg-primary text-white font-medium text-sm rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50">Get ideas for this event</button>
+          <button type="button" id="btn-get-ideas" class="btn-primary touch-target text-sm disabled:opacity-50">Get ideas for this event</button>
         </div>
 
         <div id="ideas-loading" class="hidden p-6 text-center text-muted" aria-live="polite">
@@ -207,32 +170,32 @@
         </div>
 
         <div id="ideas-results" class="hidden space-y-6">
-          <div id="fallback-ideas-note" class="hidden p-4 rounded-md border border-status-compressed-text bg-status-compressed-bg text-status-compressed-text text-sm font-medium">
+          <div id="fallback-ideas-note" class="hidden p-4 rounded-xl border border-status-compressed-text bg-status-compressed-bg text-status-compressed-text text-sm font-medium">
             AI suggestions are not available right now, so these are general ideas for your event type.
           </div>
           <div id="ideas-content" class="space-y-6"></div>
-          <p id="ideas-disclaimer" class="text-xs text-muted border-t border-panel-border pt-4"></p>
+          <p id="ideas-disclaimer" class="text-xs text-muted border-t border-[#E4DDE0] pt-4"></p>
         </div>
       </div>
 
       <!-- 5. ASK PANEL -->
       <div role="tabpanel" id="panel-ask" aria-labelledby="tab-ask" tabindex="0" hidden class="outline-none space-y-6">
-        <div class="space-y-4 bg-white border border-panel-border rounded-xl shadow-sm p-5 sm:p-6">
+        <div class="space-y-4 utsav-card p-5 sm:p-6">
           <h3 class="text-base font-serif font-bold text-ink">Plan-Aware Assistant</h3>
           <p class="text-sm text-muted">Ask questions about this specific plan. Responses are grounded strictly in your budget, timeline, and guest count.</p>
           <form id="ask-form" class="space-y-3">
             <label for="ask-input" class="sr-only">Ask a question about your plan</label>
             <div class="flex gap-2">
-              <input type="text" id="ask-input" maxlength="300" placeholder="Ask a question about your budget or timeline..." required class="flex-grow px-3.5 py-2.5 bg-white border border-panel-border rounded-md text-ink text-sm placeholder-muted focus:border-primary focus:ring-1 focus:ring-primary">
-              <button type="submit" id="btn-ask-submit" class="touch-target px-5 py-2.5 bg-primary text-white font-medium text-sm rounded-md hover:bg-primary-dark transition-colors whitespace-nowrap disabled:opacity-50">Ask</button>
+              <input type="text" id="ask-input" maxlength="300" placeholder="Ask a question about your budget or timeline..." required class="flex-grow px-3.5 py-2.5 bg-white border border-[#E4DDE0] rounded-lg text-ink text-sm placeholder-muted focus:border-primary focus:ring-1 focus:ring-primary">
+              <button type="submit" id="btn-ask-submit" class="btn-primary touch-target text-sm whitespace-nowrap disabled:opacity-50">Ask</button>
             </div>
           </form>
           <div class="space-y-1.5">
             <span class="text-xs text-muted block font-medium">Or try an example question:</span>
             <div class="flex flex-wrap gap-2" id="ask-examples">
-              <button type="button" class="btn-ask-ex px-3 py-1 bg-white border border-panel-border text-xs rounded-full hover:border-primary transition-colors text-ink">Where can I save money?</button>
-              <button type="button" class="btn-ask-ex px-3 py-1 bg-white border border-panel-border text-xs rounded-full hover:border-primary transition-colors text-ink">What should I book first?</button>
-              <button type="button" id="btn-ask-guests" class="btn-ask-ex px-3 py-1 bg-white border border-panel-border text-xs rounded-full hover:border-primary transition-colors text-ink">Is my budget enough for guests?</button>
+              <button type="button" class="btn-ask-ex px-3 py-1 bg-white border border-[#E4DDE0] text-xs rounded-full hover:border-primary transition-colors text-ink">Where can I save money?</button>
+              <button type="button" class="btn-ask-ex px-3 py-1 bg-white border border-[#E4DDE0] text-xs rounded-full hover:border-primary transition-colors text-ink">What should I book first?</button>
+              <button type="button" id="btn-ask-guests" class="btn-ask-ex px-3 py-1 bg-white border border-[#E4DDE0] text-xs rounded-full hover:border-primary transition-colors text-ink">Is my budget enough for guests?</button>
             </div>
           </div>
         </div>
@@ -248,5 +211,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/plan.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/plan.js') }}?v=20261023_rev6" defer></script>
 {% endblock %}
