@@ -113,6 +113,18 @@ function setupPrintButton() {
   if (btn) btn.addEventListener('click', () => window.print());
 }
 
+const BAR_COLORS = {
+  catering: 'bg-[#8B1E3F]',
+  venue: 'bg-amber-600',
+  decor: 'bg-blue-600',
+  attire: 'bg-teal-600',
+  photography: 'bg-purple-600',
+  entertainment: 'bg-pink-600',
+  invitations: 'bg-indigo-500',
+  transport: 'bg-cyan-600',
+  contingency: 'bg-slate-500',
+};
+
 /**
  * Renders plan header summary information and tight urgency notice.
  * @param {object} plan
@@ -130,6 +142,38 @@ function renderPlanHeader(plan) {
     const notice = document.getElementById('tight-notice');
     if (notice) notice.classList.remove('hidden');
   }
+
+  // Populate MeetCraft Dashboard Overview Cards
+  const legGuests = document.getElementById('legend-guests');
+  if (legGuests) legGuests.textContent = `${plan.guests} Guests`;
+  const legBudget = document.getElementById('legend-budget');
+  if (legBudget) legBudget.textContent = `${plan.total_display}`;
+  const legVendors = document.getElementById('legend-vendors');
+  if (legVendors && plan.vendor_checklist) legVendors.textContent = `${plan.vendor_checklist.length} Vendors`;
+  const legMiles = document.getElementById('legend-milestones');
+  if (legMiles && plan.timeline) legMiles.textContent = `${plan.timeline.length} Steps`;
+
+  const ovTotal = document.getElementById('overview-total-budget');
+  if (ovTotal) ovTotal.textContent = plan.total_display;
+  const ovDays = document.getElementById('overview-days-badge');
+  if (ovDays) ovDays.textContent = `${plan.days_until_event} Days Left`;
+
+  // Contingency vs Allocated
+  const contingencyPct = plan.budget_percentages ? (plan.budget_percentages.contingency || 0) : 0;
+  const allocatedPct = Math.max(0, 100 - contingencyPct);
+  const barAlloc = document.getElementById('overview-bar-allocated');
+  if (barAlloc) barAlloc.style.width = `${allocatedPct}%`;
+  const barCont = document.getElementById('overview-bar-contingency');
+  if (barCont) barCont.style.width = `${contingencyPct}%`;
+
+  const contAmt = plan.budget ? (plan.budget.contingency || 0) : 0;
+  const totalAmt = plan.total_budget || 0;
+  const allocAmt = Math.max(0, totalAmt - contAmt);
+
+  const ovAlloc = document.getElementById('overview-allocated-amt');
+  if (ovAlloc) ovAlloc.textContent = `₹${Math.round(allocAmt).toLocaleString('en-IN')}`;
+  const ovCont = document.getElementById('overview-contingency-amt');
+  if (ovCont) ovCont.textContent = `₹${Math.round(contAmt).toLocaleString('en-IN')}`;
 }
 
 /**
@@ -186,12 +230,13 @@ function createBudgetRow(cat, pct, amtStr) {
  * @returns {HTMLElement}
  */
 function createBarRow(cat, pct) {
-  const wrap = el('div', null, 'space-y-1');
-  const header = el('div', null, 'flex justify-between text-xs text-muted');
-  header.appendChild(el('span', formatTitle(cat)));
-  header.appendChild(el('span', `${pct}%`));
-  const track = el('div', null, 'w-full h-2 bg-panel rounded-full overflow-hidden');
-  const fill = el('div', null, 'h-full bg-primary rounded-full');
+  const wrap = el('div', null, 'space-y-1.5');
+  const header = el('div', null, 'flex justify-between text-xs');
+  header.appendChild(el('span', formatTitle(cat), 'font-medium text-ink'));
+  header.appendChild(el('span', `${pct}%`, 'font-semibold text-muted'));
+  const track = el('div', null, 'w-full h-2.5 bg-panel rounded-full overflow-hidden');
+  const colorClass = BAR_COLORS[cat] || 'bg-primary';
+  const fill = el('div', null, `h-full rounded-full ${colorClass}`);
   fill.style.width = `${Math.min(100, pct)}%`;
   track.appendChild(fill);
   wrap.appendChild(header);
