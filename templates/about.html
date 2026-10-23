@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}About Utsav - Celebration & Event Planner{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8">
+  <div class="border-b border-panel-border pb-4">
+    <h1 class="text-3xl sm:text-4xl font-serif font-bold text-ink tracking-tight mb-2">About Utsav</h1>
+    <p class="text-base text-muted">A practical planning tool for Indian celebrations and community gatherings.</p>
+  </div>
+
+  <div class="space-y-6 text-sm text-ink leading-relaxed">
+    <!-- 1. What it does -->
+    <section class="space-y-2">
+      <h2 class="text-lg font-serif font-bold text-primary">What it does</h2>
+      <p class="text-muted">
+        Utsav takes your event type, total budget, guest count, and celebration date to build a concrete starting plan. It provides a percentage-based budget breakdown in whole Indian Rupees, a milestone countdown timeline, and categorized vendor checklists with interview questions.
+      </p>
+    </section>
+
+    <!-- 2. How the numbers are calculated -->
+    <section class="space-y-2">
+      <h2 class="text-lg font-serif font-bold text-primary">How the numbers are calculated</h2>
+      <p class="text-muted">
+        Budget allocations are based on empirical planning assumptions across weddings, birthdays, and community gatherings. When you pick up to two priority categories, each receives a 5 percentage point increase funded proportionally from non-priority categories (excluding contingency), and rounding drift is balanced so amounts sum exactly to your total budget. The countdown timeline calculates milestone deadlines backwards from your event date. If an event is scheduled on short notice, overdue milestones are evenly rescheduled across the initial 40% of remaining days.
+      </p>
+    </section>
+
+    <!-- 3. Where AI is used -->
+    <section class="space-y-2">
+      <h2 class="text-lg font-serif font-bold text-primary">Where AI is used</h2>
+      <p class="text-muted">
+        Google Gemini AI is used exclusively in the Ideas and Ask tabs to suggest creative themes, menu concepts, and answer specific questions. The AI receives a compact summary of your computed plan and never alters the calculated budget or timeline numbers. If the AI service is unreachable or unconfigured, Utsav automatically provides comprehensive rule-based fallback ideas.
+      </p>
+    </section>
+
+    <!-- 4. Limits -->
+    <section class="space-y-2">
+      <h2 class="text-lg font-serif font-bold text-primary">Limits</h2>
+      <p class="text-muted">
+        Actual vendor rates fluctuate significantly across different Indian cities, peak wedding dates, and festive seasons. All figures and checklists are structured estimates intended to guide your preparations. They do not constitute official vendor quotes and do not replace professional event coordination for high-complexity gatherings.
+      </p>
+    </section>
+  </div>
+
+  <div class="pt-4 border-t border-panel-border">
+    <a href="/" class="touch-target inline-flex items-center px-4 py-2 bg-primary text-white font-medium text-sm rounded-md hover:bg-primary-dark transition-colors">Start planning an event</a>
+  </div>
+</div>
+{% endblock %}

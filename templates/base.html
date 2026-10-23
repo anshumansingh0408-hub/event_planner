@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Plan a wedding, birthday or community event: budget split, countdown timeline, vendor checklist and ideas.">
+  <title>{% block title %}Utsav - Celebration & Event Planner{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#8B1E3F',
+            'primary-dark': '#6B1530',
+            accent: '#F5B83D',
+            'accent-ink': '#3B0A1A',
+            ink: '#1F1720',
+            muted: '#5B5160',
+            panel: '#F7F4F5',
+            'panel-border': '#E4DDE0',
+            'status-urgent-text': '#B42318',
+            'status-urgent-bg': '#FEF3F2',
+            'status-compressed-text': '#B54708',
+            'status-compressed-bg': '#FFFAEB',
+            'status-upcoming-text': '#067647',
+            'status-upcoming-bg': '#ECFDF3'
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="bg-white text-ink font-sans min-h-screen flex flex-col antialiased">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="border-b border-panel-border bg-white sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="/" class="text-2xl font-serif font-bold text-primary tracking-tight flex items-center gap-2">
+        <span>Utsav</span>
+      </a>
+      <nav aria-label="Main" class="flex items-center gap-6">
+        <a href="/" class="text-sm font-medium transition-colors hover:text-primary {% if request.path == '/' or request.path == '/plan' %}text-primary border-b-2 border-primary py-5{% else %}text-muted{% endif %}" {% if request.path == '/' %}aria-current="page"{% endif %}>Plan an event</a>
+        <a href="/about" class="text-sm font-medium transition-colors hover:text-primary {% if request.path == '/about' %}text-primary border-b-2 border-primary py-5{% else %}text-muted{% endif %}" {% if request.path == '/about' %}aria-current="page"{% endif %}>About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1" class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 outline-none">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t border-panel-border bg-panel py-8 mt-12 text-center text-sm text-muted">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 space-y-2">
+      <p>Utsav gives planning suggestions. Vendor prices vary by city and season, so confirm quotes directly with vendors.</p>
+      <p class="text-xs">Built with Python, Flask and Google Gemini.</p>
+    </div>
+  </footer>
+
+  <div id="live-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="{{ url_for('static', filename='js/common.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

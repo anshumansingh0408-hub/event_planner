@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Your event plan - Utsav{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Status / Loading Indicator -->
+  <div id="plan-loading" class="p-8 text-center text-muted" aria-live="polite">
+    <p class="text-base font-medium">Generating your plan...</p>
+  </div>
+
+  <!-- Plan Error Display -->
+  <div id="plan-error" class="hidden p-6 rounded-lg border border-status-urgent-text bg-status-urgent-bg text-status-urgent-text space-y-3" role="alert">
+    <h2 class="text-base font-semibold" id="plan-error-heading">Unable to generate plan</h2>
+    <p id="plan-error-message" class="text-sm"></p>
+    <div>
+      <a href="/" class="inline-block px-4 py-2 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary-dark transition-colors">Back to the form</a>
+    </div>
+  </div>
+
+  <!-- Plan Main Content -->
+  <div id="plan-container" class="hidden space-y-8">
+    <!-- Header summary -->
+    <div class="border-b border-panel-border pb-6 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div>
+          <h1 id="plan-title" class="text-3xl sm:text-4xl font-serif font-bold text-ink tracking-tight mb-2">Your event plan</h1>
+          <p id="plan-summary-line" class="text-base text-muted"></p>
+        </div>
+        <div class="flex items-center gap-2.5 flex-wrap no-print">
+          <a href="/" class="touch-target inline-flex items-center px-4 py-2 bg-white border border-panel-border text-ink font-medium text-sm rounded-md hover:bg-panel transition-colors">Edit details</a>
+          <button type="button" id="btn-print" class="touch-target inline-flex items-center px-4 py-2 bg-white border border-panel-border text-ink font-medium text-sm rounded-md hover:bg-panel transition-colors">Print or save as PDF</button>
+        </div>
+      </div>
+
+      <!-- Tight Timeline Alert -->
+      <div id="tight-notice" class="hidden p-4 rounded-md border border-status-compressed-text bg-status-compressed-bg text-status-compressed-text text-sm font-medium">
+        This event is under 30 days away. Tasks that were already overdue have been rescheduled into the coming days, shown as 'Rescheduled'.
+      </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="border-b border-panel-border" id="tab-nav-wrapper">
+      <div role="tablist" id="tab-list" class="flex gap-2 sm:gap-6 overflow-x-auto -mb-px" aria-label="Event plan sections">
+        <button type="button" role="tab" id="tab-budget" aria-selected="true" aria-controls="panel-budget" tabindex="0" class="py-3 px-2 text-sm font-semibold border-b-2 border-primary text-primary whitespace-nowrap">Budget</button>
+        <button type="button" role="tab" id="tab-timeline" aria-selected="false" aria-controls="panel-timeline" tabindex="-1" class="py-3 px-2 text-sm font-medium text-muted hover:text-ink whitespace-nowrap">Timeline</button>
+        <button type="button" role="tab" id="tab-vendors" aria-selected="false" aria-controls="panel-vendors" tabindex="-1" class="py-3 px-2 text-sm font-medium text-muted hover:text-ink whitespace-nowrap">Vendors</button>
+        <button type="button" role="tab" id="tab-ideas" aria-selected="false" aria-controls="panel-ideas" tabindex="-1" class="py-3 px-2 text-sm font-medium text-muted hover:text-ink whitespace-nowrap">Ideas</button>
+        <button type="button" role="tab" id="tab-ask" aria-selected="false" aria-controls="panel-ask" tabindex="-1" class="py-3 px-2 text-sm font-medium text-muted hover:text-ink whitespace-nowrap">Ask</button>
+      </div>
+    </div>
+
+    <!-- Tab Panels Container -->
+    <div class="space-y-8">
+      <!-- 1. BUDGET PANEL -->
+      <div role="tabpanel" id="panel-budget" aria-labelledby="tab-budget" tabindex="0" class="outline-none space-y-6">
+        <h2 class="hidden print-section-title">Budget Breakdown</h2>
+        
+        <!-- Per Guest Box -->
+        <div id="per-guest-card" class="p-5 bg-panel border border-panel-border rounded-lg space-y-1.5">
+          <div class="flex items-baseline justify-between flex-wrap gap-2">
+            <span class="text-sm font-semibold text-ink">Per-guest allocation:</span>
+            <span id="per-guest-tier" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white border border-panel-border text-ink"></span>
+          </div>
+          <p id="per-guest-amount" class="text-2xl font-serif font-bold text-primary"></p>
+          <p id="per-guest-advice" class="text-sm text-muted"></p>
+        </div>
+
+        <!-- Budget Table Container -->
+        <div class="table-container border border-panel-border rounded-lg bg-white overflow-hidden">
+          <table class="w-full text-left border-collapse text-sm">
+            <caption class="sr-only">Detailed allocation of event budget across categories</caption>
+            <thead>
+              <tr class="bg-panel border-b border-panel-border text-xs uppercase tracking-wider text-muted font-semibold">
+                <th scope="col" class="py-3 px-4">Category</th>
+                <th scope="col" class="py-3 px-4 w-28 text-right">Share (%)</th>
+                <th scope="col" class="py-3 px-4 w-36 text-right">Amount (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="budget-table-body" class="divide-y divide-panel-border"></tbody>
+          </table>
+        </div>
+
+        <!-- Visual Distribution Bars -->
+        <div class="space-y-3 pt-2" aria-hidden="true">
+          <h3 class="text-xs font-semibold text-muted uppercase tracking-wider">Visual Distribution</h3>
+          <div id="budget-bars" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- 2. TIMELINE PANEL -->
+      <div role="tabpanel" id="panel-timeline" aria-labelledby="tab-timeline" tabindex="0" hidden class="outline-none space-y-6">
+        <h2 class="hidden print-section-title">Countdown Timeline</h2>
+
+        <!-- Do Next Section -->
+        <div id="do-next-section" class="p-5 bg-panel border border-panel-border rounded-lg space-y-3">
+          <h3 class="text-sm font-semibold text-ink flex items-center gap-2">
+            <span>Do next</span>
+          </h3>
+          <ul id="do-next-list" class="space-y-2 text-sm"></ul>
+        </div>
+
+        <!-- Full Milestone List -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-semibold text-ink">All Milestones</h3>
+          <ol id="timeline-list" class="space-y-3"></ol>
+        </div>
+      </div>
+
+      <!-- 3. VENDORS PANEL -->
+      <div role="tabpanel" id="panel-vendors" aria-labelledby="tab-vendors" tabindex="0" hidden class="outline-none space-y-6">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h2 class="hidden print-section-title">Vendor Checklists & Questions</h2>
+          <span id="vendor-progress" class="text-sm font-medium text-muted" aria-live="polite">0 of 0 tasks done</span>
+        </div>
+        <div id="vendor-accordion" class="space-y-3"></div>
+      </div>
+
+      <!-- 4. IDEAS PANEL -->
+      <div role="tabpanel" id="panel-ideas" aria-labelledby="tab-ideas" tabindex="0" hidden class="outline-none space-y-6">
+        <div id="ideas-intro" class="space-y-4">
+          <p class="text-sm text-muted">Generate bespoke themes, catering menus, and activities customized to your event parameters using Gemini AI.</p>
+          <button type="button" id="btn-get-ideas" class="touch-target px-5 py-2.5 bg-primary text-white font-medium text-sm rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50">Get ideas for this event</button>
+        </div>
+
+        <div id="ideas-loading" class="hidden p-6 text-center text-muted" aria-live="polite">
+          <p class="text-sm font-medium">Consulting Gemini for celebration ideas...</p>
+        </div>
+
+        <div id="ideas-results" class="hidden space-y-8">
+          <div id="fallback-ideas-note" class="hidden p-4 rounded-md border border-status-compressed-text bg-status-compressed-bg text-status-compressed-text text-sm font-medium">
+            AI suggestions are not available right now, so these are general ideas for your event type.
+          </div>
+          <div id="ideas-content" class="space-y-6"></div>
+          <p id="ideas-disclaimer" class="text-xs text-muted border-t border-panel-border pt-4"></p>
+        </div>
+      </div>
+
+      <!-- 5. ASK PANEL -->
+      <div role="tabpanel" id="panel-ask" aria-labelledby="tab-ask" tabindex="0" hidden class="outline-none space-y-6">
+        <div class="space-y-4 bg-panel border border-panel-border rounded-lg p-5 sm:p-6">
+          <p class="text-sm text-ink font-medium">Ask about this plan. Answers use your budget, timeline and guest count.</p>
+          <form id="ask-form" class="space-y-3">
+            <label for="ask-input" class="sr-only">Ask a question about your plan</label>
+            <div class="flex gap-2">
+              <input type="text" id="ask-input" maxlength="300" placeholder="Ask a question about your budget or timeline..." required class="flex-grow px-3.5 py-2.5 bg-white border border-panel-border rounded-md text-ink text-sm placeholder-muted focus:border-primary focus:ring-1 focus:ring-primary">
+              <button type="submit" id="btn-ask-submit" class="touch-target px-5 py-2.5 bg-primary text-white font-medium text-sm rounded-md hover:bg-primary-dark transition-colors whitespace-nowrap disabled:opacity-50">Ask</button>
+            </div>
+          </form>
+          <div class="space-y-1.5">
+            <span class="text-xs text-muted block font-medium">Or try an example question:</span>
+            <div class="flex flex-wrap gap-2" id="ask-examples">
+              <button type="button" class="btn-ask-ex px-3 py-1 bg-white border border-panel-border text-xs rounded-full hover:border-primary transition-colors text-ink">Where can I save money?</button>
+              <button type="button" class="btn-ask-ex px-3 py-1 bg-white border border-panel-border text-xs rounded-full hover:border-primary transition-colors text-ink">What should I book first?</button>
+              <button type="button" id="btn-ask-guests" class="btn-ask-ex px-3 py-1 bg-white border border-panel-border text-xs rounded-full hover:border-primary transition-colors text-ink">Is my budget enough for guests?</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="ask-answers-wrapper" class="space-y-4" aria-live="polite">
+          <h3 class="text-sm font-semibold text-ink">Conversation</h3>
+          <div id="ask-answers-list" class="space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/plan.js') }}" defer></script>
+{% endblock %}
