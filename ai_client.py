@@ -22,6 +22,10 @@ GEMINI_API_URL = (
     + GEMINI_MODEL
     + ":generateContent"
 )
+# Groq endpoint (OpenAI compatible)
+GROQ_API_URL = "https://api.groq.com/openai/v1"
+GROQ_MODEL = "openai/gpt-oss-120b"
+
 CONFIG = {
     "REQUEST_TIMEOUT": 40,
     "TEMPERATURE": 0.4,
@@ -274,7 +278,7 @@ def build_chat_prompt(plan: Dict[str, Any], question: str) -> str:
 
 
 def _prepare_gemini_request(prompt: str, expect_json: bool) -> Dict[str, Any]:
-    """Helper to build payload for Gemini API request."""
+    """Build payload for Gemini API request."""
     cfg: Dict[str, Any] = {
         "temperature": CONFIG["TEMPERATURE"],
         "maxOutputTokens": CONFIG["MAX_OUTPUT_TOKENS"],
@@ -284,8 +288,8 @@ def _prepare_gemini_request(prompt: str, expect_json: bool) -> Dict[str, Any]:
     return {"contents": [{"parts": [{"text": prompt}]}], "generationConfig": cfg}
 
 
-def _extract_response_text(resp: requests.Response) -> str:
-    """Helper to safely extract candidate text from Gemini JSON response."""
+def _extract_gemini_response_text(resp: requests.Response) -> str:
+    """Extract generated text from Gemini response."""
     try:
         candidates = resp.json().get("candidates", [])
         text = candidates[0]["content"]["parts"][0]["text"]
@@ -296,31 +300,80 @@ def _extract_response_text(resp: requests.Response) -> str:
         raise RuntimeError("Gemini API returned an empty response.")
 
 
-def call_gemini(prompt: str, api_key: str, expect_json: bool) -> str:
-    """Execute Gemini generateContent POST request without exposing credentials.
+def _prepare_groq_request(prompt: str, expect_json: bool) -> Dict[str, Any]:
+    """Build payload for Groq (OpenAI‑compatible) chat completion."""
+    messages = [
+        {"role": "user", "content": prompt}
+    ]
+    payload: Dict[str, Any] = {
+        "model": GROQ_MODEL,
+        "messages": messages,
+        "temperature": CONFIG["TEMPERATURE"],
+    }
+    if expect_json:
+        payload["response_format"] = {"type": "json_object"}
+    return payload
 
-    Args:
-        prompt: Full prompt string.
-        api_key: Gemini API secret key.
-        expect_json: Whether to demand JSON response format.
 
-    Returns:
-        Generated text string.
-
-    Raises:
-        RuntimeError: On network failure, non-200 code, or empty candidates.
-    """
-    headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
-    payload = _prepare_gemini_request(prompt, expect_json)
+def _extract_groq_response_text(resp: requests.Response) -> str:
+    """Extract generated text from Groq response (OpenAI format)."""
     try:
-        resp = requests.post(
-            GEMINI_API_URL, headers=headers, json=payload, timeout=CONFIG["REQUEST_TIMEOUT"]
-        )
-    except requests.RequestException:
-        raise RuntimeError("Gemini API request failed.")
-    if resp.status_code != 200:
-        raise RuntimeError("Gemini API request failed.")
-    return _extract_response_text(resp)
+        choices = resp.json().get("choices", [])
+        text = choices[0]["message"]["content"]
+        if not text:
+            raise RuntimeError("Groq API returned empty content.")
+        return text
+    except (IndexError, KeyError, TypeError, ValueError):
+        raise RuntimeError("Groq API returned invalid response.")
+
+
+def call_ai(prompt: str, api_key: str, expect_json: bool) -> str:
+    """Unified call for either Gemini or Groq based on API key.
+
+    If the key starts with 'gsk_' it is assumed to be a Groq key.
+    """
+    if api_key.startswith("gsk_"):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+        }
+        payload = _prepare_groq_request(prompt, expect_json)
+        try:
+            resp = requests.post(
+                f"{GROQ_API_URL}/chat/completions",
+                headers=headers,
+                json=payload,
+                timeout=CONFIG["REQUEST_TIMEOUT"],
+            )
+        except requests.RequestException:
+            raise RuntimeError("Groq API request failed.")
+        if resp.status_code != 200:
+            raise RuntimeError(f"Groq API error {resp.status_code}: {resp.text}")
+        return _extract_groq_response_text(resp)
+    else:
+        headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
+        payload = _prepare_gemini_request(prompt, expect_json)
+        try:
+            resp = requests.post(
+                GEMINI_API_URL,
+                headers=headers,
+                json=payload,
+                timeout=CONFIG["REQUEST_TIMEOUT"],
+            )
+        except requests.RequestException:
+            raise RuntimeError("Gemini API request failed.")
+        if resp.status_code != 200:
+            raise RuntimeError("Gemini API request failed.")
+        return _extract_gemini_response_text(resp)
+
+
+def call_gemini(prompt: str, api_key: str, expect_json: bool) -> str:
+    """Compatibility shim for legacy code that expects a `call_gemini` function.
+
+    Delegates to `call_ai`, which selects the correct provider (Gemini or Groq)
+    based on the API‑key prefix.
+    """
+    return call_ai(prompt, api_key, expect_json)
 
 
 def parse_json_response(text: str) -> Dict[str, Any]:
@@ -465,8 +518,8 @@ def fallback_ideas(plan: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _fetch_ai_ideas(prompt: str, api_key: str) -> Dict[str, Any]:
-    """Helper to request and parse AI ideas."""
-    text = call_gemini(prompt, api_key, expect_json=True)
+    """Request ideas from the configured AI provider (Gemini or Groq)."""
+    text = call_ai(prompt, api_key, expect_json=True)
     res = validate_ideas(parse_json_response(text))
     res["source"] = "ai"
     return res
@@ -501,9 +554,9 @@ def generate_ideas(plan: Dict[str, Any], city: str, notes: str, api_key: str) ->
 
 
 def _fetch_chat_answer(plan: Dict[str, Any], question: str, api_key: str) -> Dict[str, str]:
-    """Helper to invoke Gemini chat prompt."""
+    """Invoke the configured AI provider (Gemini or Groq) for a chat answer."""
     prompt = build_chat_prompt(plan, question)
-    ans = call_gemini(prompt, api_key, expect_json=False)
+    ans = call_ai(prompt, api_key, expect_json=False)
     return {"answer": ans.strip(), "source": "ai"}
 
 

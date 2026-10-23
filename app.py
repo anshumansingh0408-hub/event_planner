@@ -73,12 +73,12 @@ IST = timezone(timedelta(hours=5, minutes=30))
 
 
 def get_api_key() -> str:
-    """Retrieve Gemini API key from server environment variables.
+    """Retrieve Gemini or Groq API key from server environment variables.
 
     Returns:
         Configured secret key string or empty string.
     """
-    return os.environ.get("GEMINI_API_KEY", "")
+    return os.environ.get("GROQ_API_KEY") or os.environ.get("GEMINI_API_KEY") or ""
 
 
 def today_ist() -> date:
