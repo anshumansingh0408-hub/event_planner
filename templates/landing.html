@@ -4,18 +4,74 @@
 
 {% block content %}
 <!-- Section 1: Hero -->
-<section class="section-rhythm-white bg-white py-10 md:py-16 border-b border-[#E4DDE0]">
-  <div class="max-w-[1120px] mx-auto px-4 sm:px-6">
+<section class="section-rhythm-white hero-celebration-wrapper py-10 md:py-16 border-b border-[#E4DDE0] relative overflow-hidden">
+  <!-- Hero Celebration Animation Layer: Mandalas + Falling Petals & Twinkling Sparkles -->
+  <div class="utsav-hero-celebration pointer-events-none absolute inset-0 overflow-hidden z-0" aria-hidden="true">
+    <!-- Rotating Traditional Indian Celebration Mandala SVG Halos -->
+    <svg class="utsav-mandala-halo" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="200" cy="200" r="185" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 6"/>
+      <circle cx="200" cy="200" r="150" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="200" cy="200" r="115" stroke="currentColor" stroke-width="1" stroke-dasharray="2 4"/>
+      <circle cx="200" cy="200" r="80" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="200" cy="200" r="45" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="200" cy="200" r="18" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.5"/>
+      <!-- 8 Petal Lotus -->
+      <g stroke="currentColor" stroke-width="1.2">
+        <path d="M200 155 C215 170 215 185 200 200 C185 185 185 170 200 155 Z" />
+        <path d="M200 245 C215 230 215 215 200 200 C185 215 185 230 200 245 Z" />
+        <path d="M155 200 C170 215 185 215 200 200 C185 185 170 185 155 200 Z" />
+        <path d="M245 200 C230 215 215 215 200 200 C215 185 230 185 245 200 Z" />
+        <path d="M168 168 C185 178 190 190 200 200 C190 190 178 185 168 168 Z" />
+        <path d="M232 232 C215 222 210 210 200 200 C210 210 222 215 232 232 Z" />
+        <path d="M232 168 C222 185 210 190 200 200 C210 190 215 178 232 168 Z" />
+        <path d="M168 232 C178 215 190 210 200 200 C190 210 185 222 168 232 Z" />
+      </g>
+      <!-- Radiating Celebration Floral Rays -->
+      <g stroke="currentColor" stroke-width="1" stroke-linecap="round">
+        <line x1="200" y1="15" x2="200" y2="45" />
+        <line x1="200" y1="355" x2="200" y2="385" />
+        <line x1="15" y1="200" x2="45" y2="200" />
+        <line x1="355" y1="200" x2="385" y2="200" />
+        <line x1="70" y1="70" x2="90" y2="90" />
+        <line x1="330" y1="330" x2="310" y2="310" />
+        <line x1="330" y1="70" x2="310" y2="90" />
+        <line x1="70" y1="330" x2="90" y2="310" />
+      </g>
+    </svg>
+    <svg class="utsav-mandala-halo-accent" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="150" cy="150" r="135" stroke="currentColor" stroke-width="1.2" stroke-dasharray="6 6"/>
+      <circle cx="150" cy="150" r="95" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="150" cy="150" r="55" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle cx="150" cy="150" r="20" stroke="currentColor" stroke-width="1.5"/>
+      <g stroke="currentColor" stroke-width="1.2">
+        <circle cx="150" cy="55" r="7" />
+        <circle cx="150" cy="245" r="7" />
+        <circle cx="55" cy="150" r="7" />
+        <circle cx="245" cy="150" r="7" />
+      </g>
+    </svg>
+    <!-- Interactive Celebration Canvas -->
+    <canvas id="utsav-hero-canvas" class="w-full h-full block"></canvas>
+  </div>
+
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 relative z-10">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
       <!-- Left Column -->
       <div class="lg:col-span-7 space-y-6">
+        <div class="page-festive-badge">
+          <span>✦</span>
+          <span>Celebration & Event Planning</span>
+        </div>
         <h1 class="h1-hero text-ink tracking-tight font-serif font-bold text-3xl sm:text-4xl md:text-5xl">Plan a wedding, birthday or community event in one place.</h1>
         <p class="body-lead text-base md:text-lg text-muted max-w-[65ch] leading-relaxed">Enter your budget, guest count and date. Utsav splits the budget, builds a countdown timeline and a vendor checklist, and suggests ideas for your event.</p>
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
-          <a href="/create" class="btn-primary inline-flex items-center justify-center h-12 px-6 rounded-lg bg-[#8B1E3F] text-white font-semibold hover:bg-[#6B1530] transition-colors w-full sm:w-auto text-center">Start planning</a>
-          <a href="#how-it-works" class="btn-secondary inline-flex items-center justify-center h-12 px-6 rounded-lg bg-white text-[#8B1E3F] border-2 border-[#8B1E3F] font-semibold hover:bg-[#F7F4F5] transition-colors w-full sm:w-auto text-center">How it works</a>
+          <a href="/create" class="btn-primary inline-flex items-center justify-center h-12 px-6 rounded-lg bg-[#8B1E3F] text-white font-semibold hover:bg-[#6B1530] transition-colors w-full sm:w-auto text-center shadow-sm">Start planning</a>
+          <a href="#how-it-works" class="btn-secondary inline-flex items-center justify-center h-12 px-6 rounded-lg bg-white/90 text-[#8B1E3F] border-2 border-[#8B1E3F] font-semibold hover:bg-[#F7F4F5] transition-colors w-full sm:w-auto text-center backdrop-blur-sm">How it works</a>
         </div>
-        <p class="text-xs text-muted font-medium">No sign-up needed.</p>
+        <p class="text-xs text-muted font-medium flex items-center gap-1.5">
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-accent"></span>
+          <span>Free planning tool • No sign-up needed</span>
+        </p>
       </div>
 
       <!-- Right Column: Live Sample Plan Card -->

@@ -277,3 +277,324 @@ select {
     padding: 6px 8px !important;
   }
 }
+
+/* ==========================================================================
+   Utsav Celebration Animation & Ambient Background System
+   ========================================================================== */
+
+/* Ambient Celebration Backdrop (Site-wide: all pages) */
+.utsav-ambient-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Ambient Festive Light Orbs */
+.utsav-glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(85px);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.utsav-glow-orb-1 {
+  width: 540px;
+  height: 540px;
+  top: -120px;
+  right: -90px;
+  background: radial-gradient(circle, rgba(245, 184, 61, 0.16) 0%, rgba(245, 184, 61, 0.06) 50%, transparent 75%);
+  animation: utsavFloatOrb1 24s ease-in-out infinite alternate;
+}
+
+.utsav-glow-orb-2 {
+  width: 580px;
+  height: 580px;
+  bottom: -140px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(139, 30, 63, 0.12) 0%, rgba(139, 30, 63, 0.04) 50%, transparent 75%);
+  animation: utsavFloatOrb2 28s ease-in-out infinite alternate;
+}
+
+.utsav-glow-orb-3 {
+  width: 420px;
+  height: 420px;
+  top: 38%;
+  left: 60%;
+  background: radial-gradient(circle, rgba(255, 208, 116, 0.12) 0%, rgba(245, 184, 61, 0.04) 50%, transparent 70%);
+  animation: utsavFloatOrb3 20s ease-in-out infinite alternate;
+}
+
+@keyframes utsavFloatOrb1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, 45px) scale(1.08); }
+  100% { transform: translate(35px, 80px) scale(0.94); }
+}
+
+@keyframes utsavFloatOrb2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, -50px) scale(1.09); }
+  100% { transform: translate(-25px, -70px) scale(0.93); }
+}
+
+@keyframes utsavFloatOrb3 {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.10; }
+  50% { transform: translate(-40px, -35px) scale(1.12); opacity: 0.18; }
+  100% { transform: translate(50px, 25px) scale(0.92); opacity: 0.10; }
+}
+
+/* Landing Page Hero Celebration Section */
+.hero-celebration-wrapper {
+  position: relative;
+  background: radial-gradient(circle at 75% 25%, rgba(254, 248, 237, 0.8) 0%, rgba(255, 255, 255, 0.95) 60%);
+  overflow: hidden;
+}
+
+.utsav-hero-celebration {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Traditional Indian Celebration Mandala Halos */
+.utsav-mandala-halo {
+  position: absolute;
+  top: 48%;
+  left: 72%;
+  transform: translate(-50%, -50%);
+  width: 680px;
+  height: 680px;
+  max-width: 95vw;
+  max-height: 95vw;
+  pointer-events: none;
+  opacity: 0.055;
+  color: #8B1E3F;
+  animation: utsavMandalaSpin 140s linear infinite;
+  transform-origin: center center;
+}
+
+.utsav-mandala-halo-accent {
+  position: absolute;
+  top: 52%;
+  left: 70%;
+  transform: translate(-50%, -50%);
+  width: 480px;
+  height: 480px;
+  pointer-events: none;
+  opacity: 0.045;
+  color: #F5B83D;
+  animation: utsavMandalaSpinReverse 105s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes utsavMandalaSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes utsavMandalaSpinReverse {
+  from { transform: translate(-50%, -50%) rotate(360deg); }
+  to { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+/* Page Header Subtle Glow Pill (create, plan, about) */
+.page-festive-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8B1E3F;
+  background: rgba(245, 184, 61, 0.15);
+  border: 1px solid rgba(245, 184, 61, 0.35);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Glassmorphism Refinement for Cards */
+.utsav-card {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.utsav-card:hover {
+  border-color: #D6CAD0 !important;
+  box-shadow: 0 4px 14px -2px rgba(139, 30, 63, 0.06);
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .utsav-glow-orb,
+  .utsav-mandala-halo,
+  .utsav-mandala-halo-accent {
+    animation: none !important;
+  }
+}
+
+/* Print exclusion */
+@media print {
+  .utsav-ambient-backdrop,
+  .utsav-hero-celebration,
+  #utsav-ambient-canvas,
+  #utsav-hero-canvas,
+  .page-festive-badge {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Form Enhancements & Interactive State Styles
+   ========================================================================== */
+
+/* Event Type Radio Cards */
+.event-type-card {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.event-type-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(139, 30, 63, 0.4) !important;
+  box-shadow: 0 4px 12px -2px rgba(139, 30, 63, 0.08);
+}
+
+.event-type-card:has(input:checked) {
+  border-color: #8B1E3F !important;
+  background-color: #FCF8F9 !important;
+  box-shadow: 0 0 0 1px #8B1E3F, 0 4px 14px -2px rgba(139, 30, 63, 0.12) !important;
+}
+
+/* Preset Pill Buttons */
+.budget-preset-chip,
+.guest-preset-chip {
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.budget-preset-chip:hover,
+.guest-preset-chip:hover {
+  background-color: #8B1E3F !important;
+  color: #ffffff !important;
+  border-color: #8B1E3F !important;
+  transform: translateY(-1px);
+}
+
+.budget-preset-chip:active,
+.guest-preset-chip:active {
+  transform: scale(0.96);
+}
+
+/* Suggestion Tag Chips */
+.suggestion-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #F7F4F5;
+  border: 1px solid #E4DDE0;
+  color: #5B5160;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.suggestion-tag:hover {
+  background: #FCF4F6;
+  border-color: #8B1E3F;
+  color: #8B1E3F;
+  transform: translateY(-1px);
+}
+
+/* Priority Option Chips */
+.priority-chip {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.priority-chip:hover {
+  border-color: #8B1E3F !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px -1px rgba(139, 30, 63, 0.08);
+}
+
+.priority-chip:has(input:checked) {
+  border-color: #8B1E3F !important;
+  background-color: #FCF8F9 !important;
+  color: #8B1E3F !important;
+}
+
+/* ==========================================================================
+   Output Section Number Effects & Metrics Animations
+   ========================================================================== */
+
+/* Animated Counter Pop / Glow */
+.number-pop {
+  animation: numberPulse 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes numberPulse {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.number-glow-accent {
+  text-shadow: 0 0 20px rgba(245, 184, 61, 0.45);
+}
+
+/* Summary Tile Elevation */
+.plan-summary-tile {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.plan-summary-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px -4px rgba(139, 30, 63, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  border-color: #D6CAD0 !important;
+}
+
+/* Shimmer on Budget Progress Bars */
+.animated-budget-bar {
+  position: relative;
+  overflow: hidden;
+  transition: width 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animated-budget-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  animation: barSheen 3.5s ease-in-out infinite;
+}
+
+@keyframes barSheen {
+  0% { left: -100%; }
+  35% { left: 120%; }
+  100% { left: 120%; }
+}
+
+/* Synchronized Highlight between Table and Bars */
+.budget-row-highlight {
+  background-color: #FCF4F6 !important;
+  border-left: 3px solid #8B1E3F !important;
+}
+
+.bar-highlight {
+  transform: scaleY(1.3) scaleX(1.02);
+  filter: brightness(1.15) drop-shadow(0 2px 6px rgba(139, 30, 63, 0.3));
+}

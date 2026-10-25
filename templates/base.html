@@ -151,10 +151,18 @@
   </style>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}?v=20261023_rev6">
 </head>
-<body class="bg-white text-ink font-sans min-h-screen flex flex-col antialiased">
+<body class="bg-[#FCFAF8] text-ink font-sans min-h-screen flex flex-col antialiased relative">
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <header class="border-b border-[#E4DDE0] bg-white sticky top-0 z-30">
+  <!-- Ambient Festive Celebration Backdrop across all pages -->
+  <div class="utsav-ambient-backdrop pointer-events-none fixed inset-0 overflow-hidden z-0" aria-hidden="true">
+    <div class="utsav-glow-orb utsav-glow-orb-1"></div>
+    <div class="utsav-glow-orb utsav-glow-orb-2"></div>
+    <div class="utsav-glow-orb utsav-glow-orb-3"></div>
+    <canvas id="utsav-ambient-canvas" class="w-full h-full block opacity-75"></canvas>
+  </div>
+
+  <header class="border-b border-[#E4DDE0] bg-white/95 backdrop-blur-md sticky top-0 z-30">
     <div class="max-w-[1120px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
       <div class="flex items-center gap-8">
         <a href="/" class="text-2xl font-serif font-bold text-primary tracking-tight">Utsav</a>
@@ -170,11 +178,11 @@
     </div>
   </header>
 
-  <main id="main-content" tabindex="-1" class="flex-grow w-full outline-none">
+  <main id="main-content" tabindex="-1" class="flex-grow w-full outline-none relative z-10">
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="border-t border-[#E4DDE0] bg-[#F7F4F5] py-8 text-center text-sm text-muted">
+  <footer class="border-t border-[#E4DDE0] bg-[#F7F4F5]/90 backdrop-blur-sm py-8 text-center text-sm text-muted relative z-10">
     <div class="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-2">
       <p>Utsav gives planning suggestions. Vendor prices vary by city and season, so confirm quotes directly with vendors.</p>
       <p class="text-xs">Built with Python, Flask and Google Gemini.</p>
@@ -183,6 +191,7 @@
 
   <div id="live-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
+  <script src="{{ url_for('static', filename='js/celebration-bg.js') }}?v=20261024_rev1" defer></script>
   <script src="{{ url_for('static', filename='js/common.js') }}?v=20261023_rev6" defer></script>
   {% block scripts %}{% endblock %}
 </body>
