@@ -24,6 +24,10 @@
     <div class="border-b border-[#E4DDE0] pb-4 space-y-3">
       <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
+          <div class="page-festive-badge">
+            <span>✦</span>
+            <span>Utsav Celebration Blueprint</span>
+          </div>
           <h1 id="plan-title" class="text-3xl sm:text-4xl font-serif font-bold text-ink tracking-tight mb-1">Your event plan</h1>
           <p id="plan-summary-line" class="text-sm sm:text-base text-muted"></p>
         </div>
@@ -39,37 +43,63 @@
       </div>
     </div>
 
-    <!-- Summary Tiles: One row of four plain tiles (2x2 on mobile) -->
+    <!-- Summary Tiles: 4 Enhanced Metric Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="plan-summary-tiles">
       <!-- Tile 1: Days to go -->
-      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-1 shadow-sm">
-        <span class="text-xs font-semibold text-muted uppercase tracking-wider">Days to go</span>
-        <p id="tile-days-left" class="text-2xl sm:text-3xl font-serif font-bold text-ink"></p>
-        <p id="tile-urgency" class="text-xs text-muted font-medium"></p>
+      <div class="utsav-card plan-summary-tile bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-2 shadow-xs group">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-muted uppercase tracking-wider">Days to go</span>
+          <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+        </div>
+        <div>
+          <p id="tile-days-left" class="text-2xl sm:text-3xl font-serif font-bold text-ink number-glow-accent tracking-tight"></p>
+          <p id="tile-urgency" class="text-xs text-muted font-semibold mt-0.5"></p>
+        </div>
       </div>
 
       <!-- Tile 2: Total budget -->
-      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-1 shadow-sm">
-        <span class="text-xs font-semibold text-muted uppercase tracking-wider">Total budget</span>
-        <p id="tile-total-budget" class="text-2xl sm:text-3xl font-serif font-bold text-ink"></p>
-        <p class="text-xs text-muted">Across all categories</p>
+      <div class="utsav-card plan-summary-tile bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-2 shadow-xs group">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-muted uppercase tracking-wider">Total budget</span>
+          <div class="w-8 h-8 rounded-lg bg-accent/20 text-[#B45309] flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="font-bold text-sm">₹</span>
+          </div>
+        </div>
+        <div>
+          <p id="tile-total-budget" class="text-2xl sm:text-3xl font-serif font-bold text-primary number-glow-accent tracking-tight"></p>
+          <p class="text-xs text-muted mt-0.5">Across all funded categories</p>
+        </div>
       </div>
 
       <!-- Tile 3: Per guest -->
-      <div id="per-guest-card" class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-1 shadow-sm">
+      <div id="per-guest-card" class="utsav-card plan-summary-tile bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-2 shadow-xs group">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-muted uppercase tracking-wider">Per guest</span>
-          <span id="per-guest-tier" class="text-xs font-semibold text-primary"></span>
+          <span class="text-xs font-bold text-muted uppercase tracking-wider">Per guest</span>
+          <span id="per-guest-tier" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary"></span>
         </div>
-        <p id="per-guest-amount" class="text-2xl sm:text-3xl font-serif font-bold text-primary"></p>
-        <p id="per-guest-advice" class="text-xs text-muted line-clamp-2"></p>
+        <div>
+          <p id="per-guest-amount" class="text-2xl sm:text-3xl font-serif font-bold text-ink number-glow-accent tracking-tight"></p>
+          <p id="per-guest-advice" class="text-xs text-muted line-clamp-2 mt-0.5"></p>
+        </div>
       </div>
 
       <!-- Tile 4: Checklist progress -->
-      <div class="utsav-card bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-1 shadow-sm">
-        <span class="text-xs font-semibold text-muted uppercase tracking-wider">Checklist progress</span>
-        <p id="tile-checklist-progress" class="text-base sm:text-lg font-serif font-bold text-ink leading-tight pt-1">0 of 0 tasks done</p>
-        <p class="text-xs text-muted">From saved checklist</p>
+      <div class="utsav-card plan-summary-tile bg-white border border-[#E4DDE0] rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-2 shadow-xs group">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-muted uppercase tracking-wider">Checklist</span>
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+        </div>
+        <div>
+          <p id="tile-checklist-progress" class="text-base sm:text-lg font-serif font-bold text-ink leading-tight pt-1">0 of 0 tasks done</p>
+          <div class="w-full bg-[#E4DDE0] h-1.5 rounded-full mt-2 overflow-hidden">
+            <div id="tile-checklist-bar" class="h-full bg-emerald-600 rounded-full transition-all duration-700" style="width: 0%"></div>
+          </div>
+          <p class="text-[11px] text-muted mt-1">Vendor milestones</p>
+        </div>
       </div>
     </div>
 

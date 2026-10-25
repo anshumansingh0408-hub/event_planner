@@ -114,16 +114,68 @@ function setupPrintButton() {
 }
 
 const BAR_COLORS = {
-  catering: 'bg-[#8B1E3F]',
-  venue: 'bg-amber-600',
-  decor: 'bg-blue-600',
-  attire: 'bg-teal-600',
-  photography: 'bg-purple-600',
-  entertainment: 'bg-pink-600',
-  invitations: 'bg-indigo-500',
-  transport: 'bg-cyan-600',
-  contingency: 'bg-slate-500',
+  catering: 'bg-gradient-to-r from-[#8B1E3F] to-[#B91C1C]',
+  venue: 'bg-gradient-to-r from-amber-600 to-yellow-500',
+  decor: 'bg-gradient-to-r from-blue-600 to-indigo-500',
+  attire: 'bg-gradient-to-r from-teal-600 to-emerald-500',
+  photography: 'bg-gradient-to-r from-purple-600 to-pink-500',
+  entertainment: 'bg-gradient-to-r from-pink-600 to-rose-400',
+  invitations: 'bg-gradient-to-r from-indigo-500 to-sky-400',
+  transport: 'bg-gradient-to-r from-cyan-600 to-teal-400',
+  contingency: 'bg-gradient-to-r from-slate-500 to-gray-400',
 };
+
+/**
+ * Animates a numerical counter smoothly from start to end with cubic easing.
+ * @param {HTMLElement} element - Target element to update.
+ * @param {number} start - Starting numerical value.
+ * @param {number} end - Target end value.
+ * @param {number} duration - Animation duration in milliseconds.
+ * @param {function(number): string} formatter - Formatting function for values.
+ */
+function animateNumber(element, start, end, duration = 1000, formatter = (v) => v.toString()) {
+  if (!element) return;
+  element.classList.add('number-pop');
+  const startTime = performance.now();
+
+  function step(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Cubic ease out: fast start, slow settle
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const current = start + (end - start) * ease;
+    element.textContent = formatter(Math.round(current));
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      element.textContent = formatter(end);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+/**
+ * Synchronizes hover highlight state between budget table rows and visual bars.
+ * @param {string} cat - Category snake_case key.
+ * @param {boolean} active - True if hovered, False if unhovered.
+ */
+function highlightCategory(cat, active) {
+  const row = document.querySelector(`tr[data-category="${cat}"]`);
+  const bar = document.querySelector(`div[data-category="${cat}"]`);
+  if (row) {
+    if (active) row.classList.add('budget-row-highlight');
+    else row.classList.remove('budget-row-highlight');
+  }
+  if (bar) {
+    const fill = bar.querySelector('.animated-budget-bar');
+    if (fill) {
+      if (active) fill.classList.add('bar-highlight');
+      else fill.classList.remove('bar-highlight');
+    }
+  }
+}
 
 /**
  * Renders plan header summary information and tight urgency notice.
@@ -142,24 +194,27 @@ function renderPlanHeader(plan) {
     if (notice) notice.classList.remove('hidden');
   }
 
-  // Populate 4 Plain Summary Tiles
-  // Tile 1: Days to go & urgency
+  // Tile 1: Days to go (Animated roll-up)
   const tileDays = document.getElementById('tile-days-left');
-  if (tileDays) tileDays.textContent = `${plan.days_until_event} days`;
+  if (tileDays) {
+    animateNumber(tileDays, 0, plan.days_until_event, 900, (v) => `${v} days`);
+  }
   const tileUrg = document.getElementById('tile-urgency');
   if (tileUrg) {
     const urgText = plan.urgency.charAt(0).toUpperCase() + plan.urgency.slice(1);
-    tileUrg.textContent = urgText;
+    tileUrg.textContent = `${urgText} schedule`;
   }
 
-  // Tile 2: Total budget
+  // Tile 2: Total budget (Animated currency counter)
   const tileBudget = document.getElementById('tile-total-budget');
-  if (tileBudget) tileBudget.textContent = plan.total_display;
+  if (tileBudget) {
+    animateNumber(tileBudget, 0, plan.total_budget, 1200, (v) => `₹${v.toLocaleString('en-IN')}`);
+  }
 
-  // Tile 3: Per guest
+  // Tile 3: Per guest (Animated per-guest metric)
   renderPerGuestBox(plan.per_guest);
 
-  // Tile 4: Checklist progress initial count
+  // Tile 4: Checklist progress initial count & bar fill
   const storageKey = `utsav.checks.${hashString(JSON.stringify(currentInputs))}`;
   const savedChecks = loadJSON(storageKey) || {};
   const totalTasks = plan.vendor_checklist
@@ -168,6 +223,11 @@ function renderPlanHeader(plan) {
   const doneTasks = Object.keys(savedChecks).filter((k) => savedChecks[k]).length;
   const tileProgress = document.getElementById('tile-checklist-progress');
   if (tileProgress) tileProgress.textContent = `${doneTasks} of ${totalTasks} tasks done`;
+  const bar = document.getElementById('tile-checklist-bar');
+  if (bar && totalTasks > 0) {
+    const pct = Math.round((doneTasks / totalTasks) * 100);
+    setTimeout(() => { bar.style.width = `${pct}%`; }, 300);
+  }
 }
 
 /**
@@ -193,56 +253,74 @@ function renderBudgetPanel(plan) {
   if (!tbody || !bars) return;
   tbody.textContent = '';
   bars.textContent = '';
-  Object.keys(plan.budget).forEach((cat) => {
+  Object.keys(plan.budget).forEach((cat, index) => {
     const amtStr = plan.budget_display[cat];
     const pct = plan.budget_percentages[cat];
     tbody.appendChild(createBudgetRow(cat, pct, amtStr));
-    bars.appendChild(createBarRow(cat, pct));
+    bars.appendChild(createBarRow(cat, pct, index));
   });
 }
 
 /**
- * Creates table row for a budget category.
+ * Creates table row for a budget category with hover sync.
  * @param {string} cat
  * @param {number} pct
  * @param {string} amtStr
  * @returns {HTMLTableRowElement}
  */
 function createBudgetRow(cat, pct, amtStr) {
-  const tr = el('tr', null, 'hover:bg-panel transition-colors');
+  const tr = el('tr', null, 'hover:bg-panel transition-colors cursor-pointer');
+  tr.setAttribute('data-category', cat);
   const label = cat === 'contingency' ? 'Contingency (keep for surprises)' : formatTitle(cat);
-  const tdCat = el('td', label, 'py-3 px-4 font-medium text-ink');
-  const tdPct = el('td', `${pct.toFixed(2)}%`, 'py-3 px-4 text-right text-muted');
-  const tdAmt = el('td', amtStr, 'py-3 px-4 text-right font-medium text-ink');
+  const tdCat = el('td', label, 'py-3 px-4 font-semibold text-ink');
+  const tdPct = el('td', `${pct.toFixed(2)}%`, 'py-3 px-4 text-right font-medium text-muted');
+  const tdAmt = el('td', amtStr, 'py-3 px-4 text-right font-bold text-ink');
   tr.appendChild(tdCat);
   tr.appendChild(tdPct);
   tr.appendChild(tdAmt);
+
+  tr.addEventListener('mouseenter', () => highlightCategory(cat, true));
+  tr.addEventListener('mouseleave', () => highlightCategory(cat, false));
+
   return tr;
 }
 
 /**
- * Creates horizontal progress bar representation of category share.
+ * Creates horizontal progress bar representation with animated expansion and count-up.
  * @param {string} cat
  * @param {number} pct
+ * @param {number} [index=0]
  * @returns {HTMLElement}
  */
-function createBarRow(cat, pct) {
-  const wrap = el('div', null, 'space-y-1.5');
+function createBarRow(cat, pct, index = 0) {
+  const wrap = el('div', null, 'space-y-1.5 transition-all');
+  wrap.setAttribute('data-category', cat);
   const header = el('div', null, 'flex justify-between text-xs');
-  header.appendChild(el('span', formatTitle(cat), 'font-medium text-ink'));
-  header.appendChild(el('span', `${pct}%`, 'font-semibold text-muted'));
+  header.appendChild(el('span', formatTitle(cat), 'font-semibold text-ink'));
+  const pctSpan = el('span', '0%', 'font-bold text-muted');
+  header.appendChild(pctSpan);
   const track = el('div', null, 'w-full h-2.5 bg-panel rounded-full overflow-hidden');
-  const colorClass = BAR_COLORS[cat] || 'bg-primary';
-  const fill = el('div', null, `h-full rounded-full ${colorClass}`);
-  fill.style.width = `${Math.min(100, pct)}%`;
+  const colorClass = BAR_COLORS[cat] || 'bg-gradient-to-r from-primary to-primary-dark';
+  const fill = el('div', null, `h-full rounded-full animated-budget-bar ${colorClass}`);
+  fill.style.width = '0%';
   track.appendChild(fill);
   wrap.appendChild(header);
   wrap.appendChild(track);
+
+  // Animated fill expansion & number count-up
+  setTimeout(() => {
+    fill.style.width = `${Math.min(100, pct)}%`;
+    animateNumber(pctSpan, 0, Math.round(pct), 800, (v) => `${v}%`);
+  }, 100 + index * 60);
+
+  wrap.addEventListener('mouseenter', () => highlightCategory(cat, true));
+  wrap.addEventListener('mouseleave', () => highlightCategory(cat, false));
+
   return wrap;
 }
 
 /**
- * Populates per-guest assessment details card.
+ * Populates per-guest assessment details card with animated count-up.
  * @param {object} pg
  */
 function renderPerGuestBox(pg) {
@@ -251,8 +329,8 @@ function renderPerGuestBox(pg) {
   if (tier) tier.textContent = pg.level.charAt(0).toUpperCase() + pg.level.slice(1);
   const amt = document.getElementById('per-guest-amount');
   if (amt) {
-    const wholeRupees = Math.round(pg.per_guest).toLocaleString('en-IN');
-    amt.textContent = `₹${wholeRupees}`;
+    const wholeRupees = Math.round(pg.per_guest);
+    animateNumber(amt, 0, wholeRupees, 1100, (v) => `₹${v.toLocaleString('en-IN')}`);
   }
   const adv = document.getElementById('per-guest-advice');
   if (adv) adv.textContent = pg.advice;
@@ -437,6 +515,11 @@ function updateVendorProgress() {
   const tileProgress = document.getElementById('tile-checklist-progress');
   if (tileProgress) {
     tileProgress.textContent = `${done} of ${cbs.length} tasks done`;
+  }
+  const bar = document.getElementById('tile-checklist-bar');
+  if (bar && cbs.length > 0) {
+    const pct = Math.round((done / cbs.length) * 100);
+    bar.style.width = `${pct}%`;
   }
 }
 
