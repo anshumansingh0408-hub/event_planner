@@ -8,6 +8,9 @@ let apiOptions = null;
 /**
  * Initializes form controls, event listeners, and default constraints.
  */
+/**
+ * Initializes form controls, event listeners, and default constraints.
+ */
 function initForm() {
   const dateInput = document.getElementById('event_date');
   if (dateInput) {
@@ -21,7 +24,9 @@ function initForm() {
   setupCharacterCounter();
   loadApiOptions();
   setupEventListeners();
+  setupFormEnhancements();
   prefillFromStorage();
+  updateLivePreview();
 }
 
 /**
@@ -34,6 +39,127 @@ function setupCharacterCounter() {
     notes.addEventListener('input', () => {
       counter.textContent = `${notes.value.length} / 500`;
     });
+  }
+}
+
+/**
+ * Connects quick presets, live calculator, date countdown, and suggestion tags.
+ */
+function setupFormEnhancements() {
+  // 1. Budget preset chips
+  document.querySelectorAll('.budget-preset-chip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const bInput = document.getElementById('total_budget');
+      if (bInput) {
+        bInput.value = btn.getAttribute('data-amount');
+        bInput.dispatchEvent(new Event('input', { bubbles: true }));
+        updateLivePreview();
+      }
+    });
+  });
+
+  // 2. Guest preset chips
+  document.querySelectorAll('.guest-preset-chip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const gInput = document.getElementById('guests');
+      if (gInput) {
+        gInput.value = btn.getAttribute('data-count');
+        gInput.dispatchEvent(new Event('input', { bubbles: true }));
+        updateLivePreview();
+      }
+    });
+  });
+
+  // 3. Live calculation preview on budget & guests input
+  const bInput = document.getElementById('total_budget');
+  const gInput = document.getElementById('guests');
+  if (bInput) bInput.addEventListener('input', updateLivePreview);
+  if (gInput) gInput.addEventListener('input', updateLivePreview);
+
+  // 4. Date countdown badge
+  const dInput = document.getElementById('event_date');
+  if (dInput) {
+    dInput.addEventListener('change', updateDateCountdown);
+    dInput.addEventListener('input', updateDateCountdown);
+  }
+
+  // 5. Suggestion tags for notes
+  document.querySelectorAll('#suggestion-tags .suggestion-tag').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tagText = btn.getAttribute('data-tag');
+      const notes = document.getElementById('notes');
+      const counter = document.getElementById('notes-counter');
+      if (notes && tagText) {
+        const current = notes.value.trim();
+        if (!current.includes(tagText)) {
+          notes.value = current ? `${current}, ${tagText}` : tagText;
+          if (counter) counter.textContent = `${notes.value.length} / 500`;
+          notes.focus();
+        }
+      }
+    });
+  });
+}
+
+/**
+ * Calculates and updates dynamic per-guest benchmark preview live.
+ */
+function updateLivePreview() {
+  const bVal = parseFloat(document.getElementById('total_budget')?.value || '0');
+  const gVal = parseInt(document.getElementById('guests')?.value || '0', 10);
+  const calcEl = document.getElementById('live-per-guest-calc');
+  const badgeEl = document.getElementById('live-per-guest-badge');
+  if (!calcEl || !badgeEl) return;
+
+  if (bVal >= 5000 && gVal >= 1) {
+    const perGuest = Math.round(bVal / gVal);
+    calcEl.textContent = `₹${perGuest.toLocaleString('en-IN')}`;
+
+    let tier = 'Modest Tier';
+    let badgeClass = 'bg-amber-100 text-amber-800 border border-amber-300';
+    if (perGuest >= 10000) {
+      tier = 'Luxury Tier';
+      badgeClass = 'bg-purple-100 text-purple-800 border border-purple-300';
+    } else if (perGuest >= 5000) {
+      tier = 'Generous Tier';
+      badgeClass = 'bg-primary/15 text-primary border border-primary/30';
+    } else if (perGuest >= 2500) {
+      tier = 'Balanced Tier';
+      badgeClass = 'bg-emerald-100 text-emerald-800 border border-emerald-300';
+    }
+    badgeEl.textContent = tier;
+    badgeEl.className = `px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${badgeClass}`;
+  } else {
+    calcEl.textContent = '—';
+    badgeEl.textContent = 'Enter budget & guests';
+    badgeEl.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-muted';
+  }
+}
+
+/**
+ * Computes calendar countdown days from selected date.
+ */
+function updateDateCountdown() {
+  const dInput = document.getElementById('event_date');
+  const badge = document.getElementById('date-countdown-badge');
+  if (!dInput || !badge) return;
+  if (!dInput.value) {
+    badge.classList.add('hidden');
+    return;
+  }
+  const chosen = new Date(dInput.value);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffTime = chosen - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays > 0) {
+    badge.textContent = `🗓️ ${diffDays} days away`;
+    badge.classList.remove('hidden');
+  } else if (diffDays === 0) {
+    badge.textContent = `🗓️ Today`;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
   }
 }
 
@@ -63,7 +189,7 @@ function getSelectedEventType() {
 }
 
 /**
- * Renders category checkboxes for the selected event type.
+ * Renders category checkboxes for the selected event type with chip styling.
  * @param {string} eventType
  * @param {string[]} [preselected=[]]
  */
@@ -73,16 +199,16 @@ function renderPriorities(eventType, preselected = []) {
   container.textContent = '';
   const cats = apiOptions.categories[eventType] || [];
   cats.forEach((cat) => {
-    const label = el('label', null, 'flex items-center gap-2.5 p-2.5 bg-white border border-panel-border rounded-md text-sm text-ink cursor-pointer hover:border-primary transition-colors');
-    const cb = el('input', null, 'priority-checkbox rounded text-primary focus:ring-primary h-4 w-4');
+    const label = el('label', null, 'priority-chip flex items-center justify-between p-3 bg-white border border-[#E4DDE0] rounded-xl text-sm text-ink cursor-pointer hover:border-primary transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/[0.04] has-[:checked]:font-semibold shadow-xs');
+    const span = el('span', formatCategoryLabel(cat));
+    const cb = el('input', null, 'priority-checkbox rounded text-primary focus:ring-primary h-4 w-4 accent-primary');
     cb.type = 'checkbox';
     cb.name = 'priorities';
     cb.value = cat;
     if (preselected.includes(cat)) cb.checked = true;
     cb.addEventListener('change', updatePriorityStates);
-    const span = el('span', formatCategoryLabel(cat));
-    label.appendChild(cb);
     label.appendChild(span);
+    label.appendChild(cb);
     container.appendChild(label);
   });
   updatePriorityStates();
@@ -103,14 +229,26 @@ function formatCategoryLabel(cat) {
 function updatePriorityStates() {
   const cbs = Array.from(document.querySelectorAll('.priority-checkbox'));
   const checked = cbs.filter((cb) => cb.checked);
+  const badge = document.getElementById('priorities-counter-badge');
+  if (badge) {
+    badge.textContent = `${checked.length} / 2 chosen`;
+    if (checked.length === 2) {
+      badge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary text-white transition-all';
+    } else {
+      badge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary transition-all';
+    }
+  }
+
   if (checked.length >= 2) {
     cbs.filter((cb) => !cb.checked).forEach((cb) => {
       cb.disabled = true;
+      cb.closest('label')?.classList.add('opacity-45', 'cursor-not-allowed');
     });
     announce('Maximum of 2 selected.');
   } else {
     cbs.forEach((cb) => {
       cb.disabled = false;
+      cb.closest('label')?.classList.remove('opacity-45', 'cursor-not-allowed');
     });
   }
 }
@@ -151,6 +289,8 @@ function fillExampleData() {
   const notes = document.getElementById('notes');
   notes.value = 'Mostly vegetarian guests, outdoor evening ceremony';
   document.getElementById('notes-counter').textContent = `${notes.value.length} / 500`;
+  updateLivePreview();
+  updateDateCountdown();
   clearErrors();
   announce('Example data loaded.');
 }
