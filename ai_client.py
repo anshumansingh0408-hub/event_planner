@@ -327,44 +327,74 @@ def _extract_groq_response_text(resp: requests.Response) -> str:
         raise RuntimeError("Groq API returned invalid response.")
 
 
+def _call_groq(prompt: str, api_key: str, expect_json: bool) -> str:
+    """Execute Groq API completion request.
+
+    Args:
+        prompt: User prompt content.
+        api_key: Groq bearer token.
+        expect_json: True to request JSON mode.
+
+    Returns:
+        Generated response content.
+    """
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
+    payload = _prepare_groq_request(prompt, expect_json)
+    try:
+        resp = requests.post(
+            f"{GROQ_API_URL}/chat/completions",
+            headers=headers,
+            json=payload,
+            timeout=CONFIG["REQUEST_TIMEOUT"],
+        )
+    except requests.RequestException:
+        raise RuntimeError("Groq API request failed.")
+    if resp.status_code != 200:
+        raise RuntimeError(f"Groq API error {resp.status_code}: {resp.text}")
+    return _extract_groq_response_text(resp)
+
+
+def _call_gemini_api(prompt: str, api_key: str, expect_json: bool) -> str:
+    """Execute Google Gemini API completion request.
+
+    Args:
+        prompt: User prompt content.
+        api_key: Gemini API key.
+        expect_json: True to require JSON output schema.
+
+    Returns:
+        Extracted response text.
+    """
+    headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
+    payload = _prepare_gemini_request(prompt, expect_json)
+    try:
+        resp = requests.post(
+            GEMINI_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=CONFIG["REQUEST_TIMEOUT"],
+        )
+    except requests.RequestException:
+        raise RuntimeError("Gemini API request failed.")
+    if resp.status_code != 200:
+        raise RuntimeError("Gemini API request failed.")
+    return _extract_gemini_response_text(resp)
+
+
 def call_ai(prompt: str, api_key: str, expect_json: bool) -> str:
     """Unified call for either Gemini or Groq based on API key.
 
-    If the key starts with 'gsk_' it is assumed to be a Groq key.
+    Args:
+        prompt: Input text prompt.
+        api_key: Provider API secret key.
+        expect_json: Whether JSON response is required.
+
+    Returns:
+        Generated completion text.
     """
     if api_key.startswith("gsk_"):
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
-        payload = _prepare_groq_request(prompt, expect_json)
-        try:
-            resp = requests.post(
-                f"{GROQ_API_URL}/chat/completions",
-                headers=headers,
-                json=payload,
-                timeout=CONFIG["REQUEST_TIMEOUT"],
-            )
-        except requests.RequestException:
-            raise RuntimeError("Groq API request failed.")
-        if resp.status_code != 200:
-            raise RuntimeError(f"Groq API error {resp.status_code}: {resp.text}")
-        return _extract_groq_response_text(resp)
-    else:
-        headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
-        payload = _prepare_gemini_request(prompt, expect_json)
-        try:
-            resp = requests.post(
-                GEMINI_API_URL,
-                headers=headers,
-                json=payload,
-                timeout=CONFIG["REQUEST_TIMEOUT"],
-            )
-        except requests.RequestException:
-            raise RuntimeError("Gemini API request failed.")
-        if resp.status_code != 200:
-            raise RuntimeError("Gemini API request failed.")
-        return _extract_gemini_response_text(resp)
+        return _call_groq(prompt, api_key, expect_json)
+    return _call_gemini_api(prompt, api_key, expect_json)
 
 
 def call_gemini(prompt: str, api_key: str, expect_json: bool) -> str:
