@@ -120,37 +120,199 @@
       <div role="tabpanel" id="panel-budget" aria-labelledby="tab-budget" tabindex="0" class="outline-none space-y-6">
         <h2 class="hidden print-section-title">Budget Breakdown</h2>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <!-- Left: Financial Breakdown Table -->
-          <div class="lg:col-span-7 space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-semibold text-ink">Financial Breakdown</h3>
-              <span class="text-xs text-muted">Itemized category shares</span>
+        <!-- Top Expense Highlight Strip: 3 Key Financial Insights -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="budget-highlights-strip">
+          <!-- Card 1: Top Expense Focus -->
+          <div class="utsav-card p-4 rounded-xl bg-white border border-[#E4DDE0] flex items-center gap-3.5 shadow-xs">
+            <div id="top-cat-icon-wrap" class="w-12 h-12 rounded-xl bg-[#8B1E3F]/10 text-primary flex items-center justify-center text-2xl flex-shrink-0">
+              <span id="top-cat-icon">🍽️</span>
             </div>
-            <div class="table-container border border-[#E4DDE0] rounded-xl bg-white overflow-hidden">
-              <table class="w-full text-left border-collapse text-sm">
-                <caption class="sr-only">Detailed allocation of event budget across categories</caption>
-                <thead>
-                  <tr class="bg-[#F7F4F5] border-b border-[#E4DDE0] text-xs uppercase tracking-wider text-muted font-semibold">
-                    <th scope="col" class="py-3 px-4">Category</th>
-                    <th scope="col" class="py-3 px-4 w-28 text-right">Share (%)</th>
-                    <th scope="col" class="py-3 px-4 w-36 text-right">Amount (₹)</th>
-                  </tr>
-                </thead>
-                <tbody id="budget-table-body" class="divide-y divide-[#E4DDE0]"></tbody>
-              </table>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[11px] font-bold text-muted uppercase tracking-wider">Top Allocation</span>
+                <span id="top-cat-pct-badge" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#8B1E3F]/10 text-[#8B1E3F]">0%</span>
+              </div>
+              <p id="top-cat-name" class="text-sm font-bold text-ink truncate mt-0.5">Primary Category</p>
+              <p id="top-cat-amount" class="text-xs font-semibold text-primary mt-0.5">₹0</p>
             </div>
           </div>
 
-          <!-- Right: Visual Distribution Section -->
-          <div class="lg:col-span-5 space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-semibold text-ink">Visual Distribution</h3>
-              <span class="text-xs text-muted">Expenditure weight</span>
+          <!-- Card 2: Cost Per Guest Average -->
+          <div class="utsav-card p-4 rounded-xl bg-white border border-[#E4DDE0] flex items-center gap-3.5 shadow-xs">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-2xl flex-shrink-0">
+              <span>👥</span>
             </div>
-            <div class="p-5 utsav-card space-y-3.5">
-              <div id="budget-bars" class="space-y-3" aria-hidden="true"></div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[11px] font-bold text-muted uppercase tracking-wider">Per Guest Average</span>
+                <span id="spend-tier-badge" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">Balanced</span>
+              </div>
+              <p id="per-guest-spend-val" class="text-sm font-bold text-ink truncate mt-0.5">₹0 / attendee</p>
+              <p id="per-guest-spend-sub" class="text-xs text-muted mt-0.5">Based on guest count</p>
             </div>
+          </div>
+
+          <!-- Card 3: Contingency Reserve Shield -->
+          <div class="utsav-card p-4 rounded-xl bg-white border border-[#E4DDE0] flex items-center gap-3.5 shadow-xs">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl flex-shrink-0">
+              <span>🛡️</span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[11px] font-bold text-muted uppercase tracking-wider">Safety Cushion</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">5% Buffer</span>
+              </div>
+              <p id="contingency-amount" class="text-sm font-bold text-ink truncate mt-0.5">₹0</p>
+              <p class="text-xs text-muted mt-0.5">Untouchable reserve for surprise costs</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Toolbar: View Mode, Display Metric, Sorting, and Export -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-[#F7F4F5] border border-[#E4DDE0] rounded-xl no-print">
+          <!-- Left: View Mode & Unit Toggles -->
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <!-- View Mode Switcher -->
+            <div class="inline-flex p-0.5 bg-white border border-[#E4DDE0] rounded-lg shadow-2xs" role="group" aria-label="Expense representation view">
+              <button type="button" id="btn-view-split" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all bg-primary text-white shadow-xs" aria-pressed="true">
+                <span class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                  <span>Visual & Table</span>
+                </span>
+              </button>
+              <button type="button" id="btn-view-cards" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all text-muted hover:text-ink" aria-pressed="false">
+                <span class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                  <span>Category Cards</span>
+                </span>
+              </button>
+            </div>
+
+            <!-- Currency Unit Switcher (Total vs Per-Guest) -->
+            <div class="inline-flex p-0.5 bg-white border border-[#E4DDE0] rounded-lg shadow-2xs" role="group" aria-label="Currency display metric">
+              <button type="button" id="btn-unit-total" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all bg-[#8B1E3F] text-white shadow-xs" aria-pressed="true">
+                Total (₹)
+              </button>
+              <button type="button" id="btn-unit-guest" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all text-muted hover:text-ink" aria-pressed="false">
+                Per Guest (₹)
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Sorting & Share -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-1.5 text-xs text-muted font-medium">
+              <label for="select-budget-sort" class="sr-only">Sort expenses by</label>
+              <span>Sort:</span>
+              <select id="select-budget-sort" class="bg-white border border-[#E4DDE0] rounded-lg px-2.5 py-1 text-xs font-semibold text-ink focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
+                <option value="amount-desc">Amount: High to Low</option>
+                <option value="amount-asc">Amount: Low to High</option>
+                <option value="name">Category Name (A-Z)</option>
+              </select>
+            </div>
+
+            <button type="button" id="btn-copy-budget" class="btn-secondary !min-h-[32px] h-8 px-3 py-1 text-xs font-semibold rounded-lg bg-white text-[#8B1E3F] border border-[#8B1E3F] hover:bg-[#F7F4F5] transition-colors inline-flex items-center gap-1.5 cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+              <span>Share Breakdown</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- VIEW 1: Split & Visuals (Table + Interactive SVG Donut + Bars) -->
+        <div id="budget-split-view" class="space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left: Financial Breakdown Table (7 cols) -->
+            <div class="lg:col-span-7 space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-bold text-ink">Itemized Expense Table</h3>
+                  <p class="text-xs text-muted">Hover row to highlight corresponding chart slice</p>
+                </div>
+                <span id="budget-items-count" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">0 Categories</span>
+              </div>
+
+              <div class="table-container border border-[#E4DDE0] rounded-xl bg-white overflow-hidden shadow-xs">
+                <table class="w-full text-left border-collapse text-sm">
+                  <caption class="sr-only">Detailed allocation of event budget across categories</caption>
+                  <thead>
+                    <tr class="bg-[#F7F4F5] border-b border-[#E4DDE0] text-[11px] uppercase tracking-wider text-muted font-bold">
+                      <th scope="col" class="py-3 px-4">Expense Category</th>
+                      <th scope="col" class="py-3 px-3 w-20 text-right">Share</th>
+                      <th scope="col" class="py-3 px-4 w-32 text-right" id="th-budget-amount">Amount (₹)</th>
+                      <th scope="col" class="py-3 px-4 w-28 text-center no-print">Scale</th>
+                    </tr>
+                  </thead>
+                  <tbody id="budget-table-body" class="divide-y divide-[#E4DDE0]"></tbody>
+                  <tfoot>
+                    <tr class="bg-[#FAF8F9] border-t-2 border-[#E4DDE0] font-bold text-ink text-sm">
+                      <td class="py-3 px-4">
+                        <div class="flex items-center gap-2">
+                          <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                          <span>Total Planned Budget</span>
+                        </div>
+                      </td>
+                      <td class="py-3 px-3 text-right text-muted">100.0%</td>
+                      <td class="py-3 px-4 text-right text-primary font-serif text-base" id="budget-table-total">₹0</td>
+                      <td class="py-3 px-4 text-center text-xs text-muted no-print">Allocated</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Interactive SVG Donut Chart + Visual Distribution Bars (5 cols) -->
+            <div class="lg:col-span-5 space-y-6">
+              <!-- SVG Donut Chart Card -->
+              <div class="utsav-card p-5 bg-white border border-[#E4DDE0] rounded-xl space-y-4 shadow-xs">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-bold text-ink">Expense Distribution Dial</h3>
+                  <span class="text-[11px] font-semibold text-muted">Interactive Arc</span>
+                </div>
+
+                <!-- Donut Chart Canvas Container -->
+                <div class="relative flex items-center justify-center py-2" id="donut-chart-container">
+                  <svg id="budget-donut-svg" class="w-56 h-56 transform -rotate-90" viewBox="0 0 240 240" aria-label="Budget distribution donut chart">
+                    <!-- Base ring background -->
+                    <circle cx="120" cy="120" r="85" fill="transparent" stroke="#F0EBEF" stroke-width="26" />
+                    <!-- Dynamic Donut Slices injected via JS -->
+                    <g id="donut-slices-group"></g>
+                  </svg>
+
+                  <!-- Dynamic Centerpiece inside Donut -->
+                  <div id="donut-centerpiece" class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-4">
+                    <span id="donut-center-icon" class="text-2xl transition-transform duration-200">✨</span>
+                    <span id="donut-center-label" class="text-[11px] font-bold text-muted uppercase tracking-wider mt-0.5 truncate max-w-[130px]">Total Budget</span>
+                    <span id="donut-center-value" class="text-lg font-serif font-bold text-ink leading-tight mt-0.5">₹0</span>
+                    <span id="donut-center-sub" class="text-[11px] font-semibold text-primary">100% share</span>
+                  </div>
+                </div>
+
+                <!-- Donut Mini Legend Grid -->
+                <div id="donut-legend" class="grid grid-cols-2 gap-2 pt-2 border-t border-[#E4DDE0] text-xs max-h-48 overflow-y-auto"></div>
+              </div>
+
+              <!-- Visual Progress Bars Section -->
+              <div class="utsav-card p-5 bg-white border border-[#E4DDE0] rounded-xl space-y-3.5 shadow-xs">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-bold text-ink">Relative Weight Bars</h3>
+                  <span class="text-[11px] text-muted">Expenditure scale</span>
+                </div>
+                <div id="budget-bars" class="space-y-3" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 2: Category Cards Grid (Visible when Cards View is toggled) -->
+        <div id="budget-cards-view" class="hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-ink">Category Investment Cards</h3>
+              <p class="text-xs text-muted">Itemized view with direct vendor checklist links</p>
+            </div>
+          </div>
+          <div id="budget-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Injected dynamically via JS -->
           </div>
         </div>
       </div>
@@ -235,7 +397,10 @@
           <div id="ask-answers-list" class="space-y-4"></div>
         </div>
       </div>
-    </div>
+  <!-- Toast Notification Container -->
+  <div id="budget-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 pointer-events-none transition-all duration-300 ease-out bg-[#1F1720] text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-semibold" role="status" aria-live="polite">
+    <span class="text-accent text-sm">✓</span>
+    <span id="budget-toast-msg">Copied to clipboard</span>
   </div>
 </div>
 {% endblock %}
