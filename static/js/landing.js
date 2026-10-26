@@ -82,22 +82,43 @@ function renderLandingSample(plan) {
   if (budgetRowsContainer && plan.budget) {
     budgetRowsContainer.textContent = '';
     const categories = Object.keys(plan.budget).slice(0, 4);
+    const icons = {
+      venue: '🏰', catering: '🍽️', decor: '🌸', photography: '📸',
+      attire_beauty: '👗', attire: '👗', entertainment: '🎵', invitations: '💌',
+      transport: '🚗', cake: '🎂', sound_av: '🔊', contingency: '🛡️'
+    };
     categories.forEach((cat) => {
       const row = document.createElement('div');
-      row.className = 'flex items-center justify-between py-1 border-b border-[#E4DDE0] last:border-0';
+      row.className = 'py-1.5 border-b border-[#E4DDE0] last:border-0 space-y-1';
 
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'text-muted font-medium';
-      nameSpan.textContent = formatCategoryTitle(cat);
+      const top = document.createElement('div');
+      top.className = 'flex items-center justify-between text-xs';
+
+      const left = document.createElement('span');
+      left.className = 'text-muted font-medium flex items-center gap-1.5';
+      const icon = icons[cat] || '✨';
+      left.textContent = `${icon} ${formatCategoryTitle(cat)}`;
 
       const valSpan = document.createElement('span');
-      valSpan.className = 'font-semibold text-ink';
+      valSpan.className = 'font-semibold text-ink text-xs';
       const pct = plan.budget_percentages ? plan.budget_percentages[cat] : null;
       const amtStr = plan.budget_display ? plan.budget_display[cat] : `₹${Math.round(plan.budget[cat]).toLocaleString('en-IN')}`;
       valSpan.textContent = pct ? `${amtStr} (${pct}%)` : amtStr;
 
-      row.appendChild(nameSpan);
-      row.appendChild(valSpan);
+      top.appendChild(left);
+      top.appendChild(valSpan);
+      row.appendChild(top);
+
+      if (pct) {
+        const barWrap = document.createElement('div');
+        barWrap.className = 'w-full bg-[#F0EBEF] h-1 rounded-full overflow-hidden';
+        const barFill = document.createElement('div');
+        barFill.className = 'h-full bg-primary rounded-full';
+        barFill.style.width = `${Math.min(100, pct)}%`;
+        barWrap.appendChild(barFill);
+        row.appendChild(barWrap);
+      }
+
       budgetRowsContainer.appendChild(row);
     });
   }
